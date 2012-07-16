@@ -81,7 +81,6 @@ class Assorted(callbacks.Plugin):
         text = ''.join([ircutils.mircColor(x, random.choice(ircutils.mircColors.keys())) for x in text])
         return text
     
-    # http://callook.info/w1aw/json
     def callook(self, irc, msg, args, optsign):
         """<callsign>
         Lookup specific callsign in radio DB.
@@ -117,19 +116,17 @@ class Assorted(callbacks.Plugin):
             irc.reply("%s is INVALID" % optsign)
             return
 
-        # 14:38:48 <madsage> i would do Opertor Name, Operator Class, and location.
         if status == "VALID":
-            type = jsondata.get('type')
+            lictype = jsondata.get('type')
             name = jsondata.get('name')
             grantDate = jsondata['otherInfo'].get('grantDate')
-            class = jsondata['current'].get('operClass')
+            operclass = jsondata['current'].get('operClass')
 
-            output = "{0} {1} {2} {3}".format(type, name, grantDate, class)
+            output = "{0} {1} {2} {3}".format(lictype, name, grantDate, operclass)
 
             irc.reply(output)
 
     callook = wrap(callook, [('somethingWithoutSpaces')])
-
 
     def randomfacts(self, irc, msg, args):
         """Fetch a random fact from www.randomfunfacts.com"""
@@ -234,14 +231,75 @@ class Assorted(callbacks.Plugin):
             high = ircutils.mircColor(bitcoin['high'], 'red')
 
             output = "Last trade: " + last
-            output += " 24hr volume: " + vol
-            output += " low: " + low
-            output += " high: " + high
+            output += "  24hr volume: " + vol
+            output += "  low: " + low
+            output += "  high: " + high
             output += "  (figures all in USD)"
 
             irc.reply(output)
 
     bitcoin = wrap(bitcoin)
+
+    def isitdown(self, irc, msg, args, url):
+        """
+        <url>: Returns the response from http://www.downforeveryoneorjustme.com/
+        """
+        site = 'http://downforeveryoneorjustme.com/'
+        ua = 'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.11) Gecko/20071204 Ubuntu/7.10 (gutsy) Firefox/2.0.0.11'
+        opener = build_opener()
+        opener.addheaders = [('User-Agent', ua)]
+        # strip the protocol because downforeveryoneorjustme.com is
+        # too stupid to do that; we're smarter than that, damnit
+        url = re.sub(r'^.*?://', r'', url)
+        try:
+            html = opener.open(site + url)
+            html_str = html.read()
+            soup = BeautifulSoup(html_str)
+            response = soup.div.contents[0].strip()
+            irc.reply(response, prefixNick=True)
+        except HTTPError, oops:
+            irc.reply("Hmm. downforeveryoneorjustme.com returned the following error: [%s]" % (str(oops)), prefixNick=True)
+        except AttributeError:
+            irc.reply("Hmm. downforeveryoneorjustme.com probably changed its response format; please update me.", prefixNick=True)
+        except:
+            irc.reply("Man, I have no idea; things blew up real good.", prefixNick=True)
+    isitdown = wrap(isitdown, ['text'])
+
+    def nerdman(self, irc, args, msg, opts):
+        """
+        Display one of nerdman's wonderful quotes.
+        """
+
+        opts = dict(opts)
+
+        url = 'http://www.hockeydrunk.com/nerdman/random.php'
+        
+        # attempt to fetch data
+        try:
+            request = urllib2.Request(url)
+            response = urllib2.urlopen(request)
+        except URLError, e:
+            irc.reply(ircutils.mircColor("ERROR:", 'red') + " fetching hockeydrunk.com URL: %s" % (e.reason))
+            return
+        except HTTPError, e:
+            irc.reply(ircutils.mircColor("ERROR:", 'red') + " fetching hockeydrunk.com URL: %s" % (e.code))
+            return
+
+        try:
+            response_data = response.read()
+        except:
+            irc.reply(ircutils.mircColor("ERROR:", 'red') + " Failed to read and parse XML response data.")
+            return
+
+        if 'rainbow' in opts:
+           response_data = self._rainbow(response_data)
+
+
+        if len(response_data) > 0:
+            irc.reply(response_data)
+
+
+    nerdman = wrap(nerdman, [getopts({'rainbow': ''})])
 
     def fuckingdinner(self, irc, msg, args, opts):
         """[--veg] 
