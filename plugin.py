@@ -80,6 +80,56 @@ class Assorted(callbacks.Plugin):
     def _rainbow(self, text):
         text = ''.join([ircutils.mircColor(x, random.choice(ircutils.mircColors.keys())) for x in text])
         return text
+    
+    # http://callook.info/w1aw/json
+    def callook(self, irc, msg, args, optsign):
+        """<callsign>
+        Lookup specific callsign in radio DB.
+        """
+
+        url = 'http://callook.info/%s/json' % optsign
+
+        try:
+            request = urllib2.Request(url)
+            response = urllib2.urlopen(request)
+            response_data = response.read()
+        except urllib2.HTTPError as err:
+            if err.code == 404:
+                irc.reply("Error 404")
+                self.log.warning("Error 404 on: %s" % (jsonurl))
+            elif err.code == 403:
+                irc.reply("Error 403. Try waiting 60 minutes.")
+                self.log.warning("Error 403 on: %s" %s (jsonurl))
+            else:
+                irc.reply("Error. Check the logs.")
+            return
+
+        try:
+            jsondata = json.loads(response_data)
+        except:
+            irc.reply("Could not load JSON data.")
+            self.log.info(jsondata)
+            return
+
+        status = jsondata.get('status')
+
+        if status == "INVALID":
+            irc.reply("%s is INVALID" % optsign)
+            return
+
+        # 14:38:48 <madsage> i would do Opertor Name, Operator Class, and location.
+        if status == "VALID":
+            type = jsondata.get('type')
+            name = jsondata.get('name')
+            grantDate = jsondata['otherInfo'].get('grantDate')
+            class = jsondata['current'].get('operClass')
+
+            output = "{0} {1} {2} {3}".format(type, name, grantDate, class)
+
+            irc.reply(output)
+
+    callook = wrap(callook, [('somethingWithoutSpaces')])
+
 
     def randomfacts(self, irc, msg, args):
         """Fetch a random fact from www.randomfunfacts.com"""
