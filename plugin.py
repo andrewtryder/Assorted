@@ -80,6 +80,104 @@ class Assorted(callbacks.Plugin):
     def _rainbow(self, text):
         text = ''.join([ircutils.mircColor(x, random.choice(ircutils.mircColors.keys())) for x in text])
         return text
+
+    def _red(self, string):
+        try:
+            return ircutils.mircColor(string, 'red')
+        except:
+            return string
+
+    def megamillions(self, irc, msg, args):
+        """Show megamillions numbers."""
+        
+        url = 'http://www.megamillions.com'
+
+        try:
+            req = urllib2.Request(url)
+            html = (urllib2.urlopen(req)).read()
+        except:
+            irc.reply("Could not fetch: %s" % url)
+            return
+
+        html = html.replace('&nbsp;',' ')
+
+        soup = BeautifulSoup(html)
+        est = soup.find('div', attrs={'id':'estimated_amount'}).find('span', attrs={'class':'yellow_text'})
+        dd = soup.find('div', attrs={'id':'estimated_amount'}).find('span', attrs={'class':'yellow_text_sm'})
+
+        url = 'http://www.megamillions.com/numbers/'
+
+        try:
+            req = urllib2.Request(url)
+            html = (urllib2.urlopen(req)).read()
+        except:
+            irc.reply("Could not fetch: %s" % url)
+            return
+
+        html = html.replace('&nbsp;',' ')
+        soup = BeautifulSoup(html)
+
+        prev = soup.find('h1')
+        table = soup.find('table', attrs={'width':'90%'})
+        images = table.findAll('img', attrs={'src': re.compile('\.\./images.*?')})
+        prevnum = ' '.join(i['alt'] for i in images)
+
+        output = "{0} {1} :: {2} are {3}".format(ircutils.bold(est.renderContents()), dd.renderContents(), prev.renderContents(), ircutils.bold(prevnum))
+        irc.reply(output)
+
+    megamillions = wrap(megamillions)
+
+    def mortgage(self, irc, msg, args, state):
+        """[state code]
+        Returns latest mortgage rates summary from Zillow --
+        http://www.zillow.com/howto/api/APIOverview.htm
+        Optional: call with the two-letter state code to display specific rates.
+        """
+        
+        # need an API key.
+        apiKey = self.registryValue('apiKey')
+        if not apiKey or apiKey == "Not set":
+            irc.reply("API key not set. See 'config help plugins.Zillow.apiKey'.")
+            return
+
+        url = API_URL % ('GetRateSummary', apiKey)
+
+        if state:
+            url += "&state=%s" % state
+
+        self.log.info(url)
+        jsondata = web.getUrl(url, headers=HEADERS)
+        response = json.loads(jsondata)
+
+        try:
+            message_code = response['message']['code']
+            message_text = response['message']['text']
+        except:
+            irc.reply("Failed to get a valid JSON response from Zillow.")
+            return
+
+        if message_code != "0":
+            irc.reply("Error on response. Message code: %s (%s)" % (message_code, message_text))
+            return
+
+        rates = response.get('response', None)
+
+        if rates != None:
+
+            o = "The average rate on a 30 year mortgage is %s. Last week it was %s. " + \
+            "If you want a 15 year mortgage the average rate is %s. Last week it was %s. " + \
+            "If you're crazy enough to want a 5-1 ARM the average rate is %s. Last week it was %s. " 
+
+            resp = o % (
+                self._red(rates['today']['thirtyYearFixed']), self._red(rates['lastWeek']['thirtyYearFixed']),
+                self._red(rates['today']['fifteenYearFixed']), self._red(rates['lastWeek']['fifteenYearFixed']),
+                self._red(rates['today']['fiveOneARM']), self._red(rates['lastWeek']['fiveOneARM']))
+        
+            irc.reply(resp)
+        else:
+            irc.reply("Error: No rates found.")
+
+    mortgage = wrap(mortgage, [optional('somethingWithoutSpaces')])
     
     def callook(self, irc, msg, args, optsign):
         """<callsign>
