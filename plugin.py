@@ -87,6 +87,32 @@ class Assorted(callbacks.Plugin):
         except:
             return string
 
+    def powerball(self, irc, msg, args):
+        """Show powerball numbers."""
+
+        url = 'http://www.usamega.com'
+
+        try:
+            req = urllib2.Request(url)
+            html = (urllib2.urlopen(req)).read()
+        except:
+            irc.reply("Failed to fetch: %s" % url)
+            return
+
+        html = html.replace('&nbsp;','')
+
+        soup = BeautifulSoup(html)
+        nextpbdate = soup.findAll('div', attrs={'class':'BluebarSmText'})[2]
+        prevpbdate = soup.findAll('div', attrs={'class':'BluebarSmText'})[3]
+        curjackpot = soup.findAll('td', attrs={'class':'JackpotText'})[1]
+        prevpb = soup.findAll('td', attrs={'class':'ResultsText'})[1]
+
+        output = "Current jackpot: {0} for {1} :: Previous numbers: {2} from: {3}".format(ircutils.bold(curjackpot.text),\
+            nextpbdate.text, ircutils.bold(prevpb.text), prevpbdate.text)  
+        irc.reply(output)
+    
+    powerball = wrap(powerball)
+
     def megamillions(self, irc, msg, args):
         """Show megamillions numbers."""
         
