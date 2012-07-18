@@ -24,6 +24,8 @@ Assorted = conf.registerPlugin('Assorted')
 # This is where your configuration variables (if any) should go.  For example:
 # conf.registerGlobalValue(Assorted, 'someConfigVariableName',
 #     registry.Boolean(False, _("""Help for someConfigVariableName.""")))
+conf.registerGlobalValue(Assorted, 'apiKey', registry.String('Not set', """API key to use http://www.zillow.com/howto/api/APIOverview.htm """, private=True))
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=250:
