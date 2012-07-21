@@ -13,8 +13,7 @@ import json
 import re
 import urllib
 import xml.dom.minidom
-
-
+import base64
 
 import supybot.utils as utils
 from supybot.commands import *
@@ -86,6 +85,21 @@ class Assorted(callbacks.Plugin):
             return ircutils.mircColor(string, 'red')
         except:
             return string
+
+    def b64decode(self, irc, msg, args, optstring):
+        """Returns base64 decoded string."""
+        
+        irc.reply(base64.b64decode(optstring))
+
+    b64decode = wrap(b64decode, [('somethingWithoutSpaces')])
+
+    def b64encode(self, irc, msg, args, optstring):
+        """Returns bas64 encoded string."""
+
+        irc.reply(base64.b64encode(optstring))
+
+    b64encode = wrap(b64encode, [('somethingWithoutSpaces')])
+
 
     def powerball(self, irc, msg, args):
         """Show powerball numbers."""
