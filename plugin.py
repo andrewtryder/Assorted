@@ -474,6 +474,33 @@ class Assorted(callbacks.Plugin):
 
     fuckingdinner = wrap(fuckingdinner, [getopts({'veg': ''})])
 
+    def winewoot(self, irc, msg, args):
+        """ Display daily wine.woot.com deal."""
+
+        url = "http://wine.woot.com/salerss.aspx"
+
+        dom = xml.dom.minidom.parse(urllib2.urlopen(url))
+
+        product = dom.getElementsByTagName("woot:product")[0].childNodes[0].data
+        price = dom.getElementsByTagName("woot:price")[0].childNodes[0].data
+        purchaseurl = dom.getElementsByTagName("woot:purchaseurl")[0].childNodes[0].data
+        soldout = dom.getElementsByTagName("woot:soldout")[0].childNodes[0].data # false
+        shipping = dom.getElementsByTagName("woot:shipping")[0].childNodes[0].data
+
+        if soldout == 'false':
+            output = ircutils.mircColor("IN STOCK ", "green")
+        else:
+            output = ircutils.mircColor("SOLDOUT ", "red")
+
+        output += ircutils.underline(ircutils.bold("ITEM:")) + " " + product + " "
+        output += ircutils.underline(ircutils.bold("PRICE:")) + " " + price + " (Shipping:" + shipping + ") "
+        output += ircutils.underline(ircutils.bold("URL:")) + " " + self._shortenUrl(purchaseurl) + " "
+
+        irc.reply(output)
+
+    winewoot = wrap(winewoot)
+
+
     def woot(self, irc, msg, args):	
         """ Display daily woot.com deal."""
 
