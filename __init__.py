@@ -1,5 +1,5 @@
 ###
-# Copyright (c) 2012, spline
+# Copyright (c) 2013, spline
 # All rights reserved.
 #
 #
@@ -41,4 +41,4 @@ Class = plugin.Class
 configure = config.configure
 
 
-# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 tabstop=4 expandtab textwidth=250:
