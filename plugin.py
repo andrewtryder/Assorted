@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
 ###
-# Copyright (c) 2012, spline
+# Copyright (c) 2013, spline
 # All rights reserved.
 #
 #
 ###
 
+# my libs
 from lxml import etree
 from BeautifulSoup import BeautifulSoup
 import urllib2
@@ -14,7 +16,12 @@ import re
 import urllib
 import xml.dom.minidom
 import base64
+try:
+    import xml.etree.cElementTree as ElementTree
+except ImportError:
+    import xml.etree.ElementTree as ElementTree  
 
+# supybot libs
 import supybot.utils as utils
 from supybot.commands import *
 import supybot.plugins as plugins
@@ -100,6 +107,60 @@ class Assorted(callbacks.Plugin):
 
     b64encode = wrap(b64encode, [('somethingWithoutSpaces')])
 
+    def bash(self, irc, msg, args):
+        """
+        Display a random bash.org quote.
+        """
+        
+        url = 'http://www.bash.org/?random1'
+
+        try:
+            request = urllib2.Request(url)
+            u = urllib2.urlopen(request).read()
+        except:
+            irc.reply("Failed to open: %s" % url)
+            return
+               
+        soup = BeautifulSoup(u,convertEntities=BeautifulSoup.HTML_ENTITIES)
+        quotes = soup.findAll('p', attrs={'class':'qt'})
+        quote = choice(quotes)
+        num = quote.findPrevious('b')
+
+        irc.reply("[{0}] {1}".format(self._red(num.getText()),quote.getText()))
+        
+    bash = wrap(bash)
+
+    def fml(self, irc, msg, args, getopts):
+        """
+        Display a random fmylife.com entry.
+        """
+
+        url = 'http://api.betacie.com/view/random?key=4be9c43fc03fe&language=en'
+
+        try:
+            request = urllib2.Request(url)
+            u = urllib2.urlopen(request)
+        except:
+            irc.reply("Failed to open: %s" % url)
+            return
+            
+        tree = ElementTree.parse(u)
+        document = tree.getroot()
+
+        if document.find('code').text != "1":
+            irc.reply("Something went wrong doing FML. Try again later.")
+            return
+        
+        gender = tree.find('items/item/author').get('gender') # can be none
+        country = tree.find('items/item/author').get('country')
+        region = tree.find('items/item/author').get('region')
+        category = tree.find('items/item/category').text.encode('utf-8')
+        message = tree.find('items/item/text').text.encode('utf-8')
+        link = tree.find('items/item/short_url').text
+        
+        irc.reply("FML: [{0}] {1}".format(category, message))
+    
+    fml = wrap(fml, [getopts({})])
 
     def powerball(self, irc, msg, args):
         """Show powerball numbers."""
@@ -601,4 +662,4 @@ class Assorted(callbacks.Plugin):
 Class = Assorted
 
 
-# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=79:
+# vim:set shiftwidth=4 softtabstop=4 expandtab textwidth=250:
