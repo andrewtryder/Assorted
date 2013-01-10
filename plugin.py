@@ -107,6 +107,26 @@ class Assorted(callbacks.Plugin):
 
     b64encode = wrap(b64encode, [('somethingWithoutSpaces')])
 
+    def mydrunktexts(self, irc, msg, args):
+        """
+        Display random text from mydrunktexts.com
+        """
+        
+        url = 'http://mydrunktexts.com/random'
+
+        try:
+            request = urllib2.Request(url)
+            u = urllib2.urlopen(request).read()
+        except:
+            irc.reply("Failed to open: %s" % url)
+            return
+    
+        soup = BeautifulSoup(u,convertEntities=BeautifulSoup.HTML_ENTITIES)
+        txt = soup.find('div', attrs={'class':'bubblecontent'}).getText() # <div class="bubblecontent">
+        irc.reply(txt)
+        
+    mydrunktexts = wrap(mydrunktexts)
+
     def bash(self, irc, msg, args):
         """
         Display a random bash.org quote.
