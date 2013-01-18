@@ -16,6 +16,7 @@ import re
 import urllib
 import xml.dom.minidom
 import base64
+import socket
 try:
     import xml.etree.cElementTree as ElementTree
 except ImportError:
@@ -106,6 +107,88 @@ class Assorted(callbacks.Plugin):
         irc.reply(base64.b64encode(optstring))
 
     b64encode = wrap(b64encode, [('somethingWithoutSpaces')])
+
+    def geoip(self, irc, msg, args, user):
+        """<ip.address>
+        Use a GeoIP API to lookup the location of an IP.
+        """
+
+        # Some logic to determine if input is a user, a hostname, or IP address.
+        # All code here is from the generous Hoaas who uses it within his Patdown Supybot plugin.
+
+        try:
+            socket.inet_aton(user)
+            ip = user
+            input = None
+            user = None
+
+        except socket.error:
+            # If it is a nick in the channel
+            if ( irc.isNick(user) and user in irc.state.channels[msg.args[0]].users ):
+                hostname = irc.state.nickToHostmask(user)
+                hostname = hostname[hostname.find("@")+1:]
+            # Possibly an hostname?
+            else:
+                hostname = user
+                user = None
+            try:
+                __, __, ip = socket.gethostbyname_ex(hostname)
+            except socket.herror:
+                irc.reply("ALERT! ERROR! No srsly, not sure what this is.")
+                return
+            except socket.gaierror:
+                irc.reply("No IP found. (it was a hostname, right?)")
+                return
+
+            ip = ip[0]
+
+
+        jsonurl = 'http://freegeoip.net/json/%s' % (ip)
+
+        self.log.info(jsonurl)
+
+        try:
+            request = urllib2.Request(jsonurl)
+            response = urllib2.urlopen(request)
+            response_data = response.read()
+        except urllib2.HTTPError as err:
+            if err.code == 404:
+                irc.reply("Error 404")
+                self.log.warning("Error 404 on: %s" % (jsonurl))
+            elif err.code == 403:
+                irc.reply("Error 403. Try waiting 60 minutes.")
+                self.log.warning("Error 403 on: %s" %s (jsonurl))
+            else:
+                irc.reply("Error. Check the logs.")
+            return
+
+        try:
+            jsondata = json.loads(response_data)
+        except:
+            irc.reply("Failed in loading JSON data for GeoIP.")
+            return
+
+        if len(jsondata) < 1:
+            irc.reply("I found no JSON Data forGeoIP.")
+            return
+
+        city = jsondata.get('city', None)
+        region_code = jsondata.get('region_code', None)
+        region_name = jsondata.get('region_name', None)
+        zipcode = jsondata.get('zipcode', None)
+        longitude = jsondata.get('longitude', None)
+        latitude = jsondata.get('latitude', None)
+        ip = jsondata.get('ip', None)
+
+        if ip != None and city != None and region_code != None:
+            output = ircutils.bold(ircutils.underline(ip))
+            output += " " + city + " " + region_code
+            output += " (" + longitude + ", " + latitude + ") " 
+
+
+        irc.reply(output)
+    
+    geoip = wrap(geoip, [('somethingWithoutSpaces')])
 
     def mydrunktexts(self, irc, msg, args):
         """
