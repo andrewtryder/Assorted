@@ -20,7 +20,7 @@ import socket
 try:
     import xml.etree.cElementTree as ElementTree
 except ImportError:
-    import xml.etree.ElementTree as ElementTree  
+    import xml.etree.ElementTree as ElementTree
 
 # supybot libs
 import supybot.utils as utils
@@ -37,7 +37,7 @@ class Assorted(callbacks.Plugin):
     """Add the help for "@plugin help Assorted" here
     This should describe *how* to use this plugin."""
     threaded = True
-    
+
     # http://stackoverflow.com/questions/1094841/reusable-library-to-get-human-readable-version-of-file-size
     def _size_fmt(self, num):
         for x in ['','k','M','B','T']:
@@ -49,7 +49,7 @@ class Assorted(callbacks.Plugin):
         """It takes a float string ("1,23" or "1,234.567.890") and
         converts it to floating point number (1.23 or 1.234567890).
         """
-      
+
         float_string = str(float_string)
         errormsg = "ValueError: Input must be decimal or integer string"
         try:
@@ -64,7 +64,7 @@ class Assorted(callbacks.Plugin):
         except ValueError, error:
             print "%s\n%s" %(errormsg, error)
             return None
-            
+
     def _splitinput(self, txt, seps):
         default_sep = seps[0]
         for sep in seps[1:]:
@@ -83,7 +83,7 @@ class Assorted(callbacks.Plugin):
         response_data = response.read()
         shorturi = json.loads(response_data)['id']
         return shorturi
-        
+
     def _rainbow(self, text):
         text = ''.join([ircutils.mircColor(x, random.choice(ircutils.mircColors.keys())) for x in text])
         return text
@@ -96,7 +96,7 @@ class Assorted(callbacks.Plugin):
 
     def b64decode(self, irc, msg, args, optstring):
         """Returns base64 decoded string."""
-        
+
         irc.reply(base64.b64decode(optstring))
 
     b64decode = wrap(b64decode, [('somethingWithoutSpaces')])
@@ -107,6 +107,50 @@ class Assorted(callbacks.Plugin):
         irc.reply(base64.b64encode(optstring))
 
     b64encode = wrap(b64encode, [('somethingWithoutSpaces')])
+
+
+    def _frinkcleanup(self, text):
+        text = text.replace(' in ', ' -> ')
+        text = text.replace(' to ', ' -> ')
+        text = text.replace(' as ', ' -> ')
+        text = text.replace(' over ', ' / ')
+        return text
+
+    def frink(self, irc, msg, args, optinput):
+        """<expression>
+        Use the Frink online calculator. Ex: 2+2
+        """
+
+        optinput = self._frinkcleanup(optinput)
+        url = 'http://futureboy.us/fsp/frink.fsp?hideHelp=Hide+%27help%27+information+below&fromVal=' + utils.web.urlquote(optinput)
+
+        try:
+            req = urllib2.Request(url)
+            req.add_header("User-Agent","Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:17.0) Gecko/17.0 Firefox/17.0")
+            r = urllib2.urlopen(req)
+        except Exception, e:
+            self.log.error("I could not open {0} error: {1}".format(url, e))
+            irc.reply("ERROR: I could not open {0}".format(url))
+            return
+
+        result = r.read()
+        r_result = re.compile(r'(?i)<A NAME=results>(.*?)</A>')
+        r_tag = re.compile(r'<\S+.*?>')
+        match = r_result.search(result)
+
+        if not match:
+            irc.reply("Calculation error looking up: {0}.".format(optinput))
+            return
+
+        result = match.group(1)
+        result = r_tag.sub("", result) # strip span.warning tags
+        result = result.replace("&gt;", ">")
+        result = result.replace("(undefined symbol)", "(?) ")
+        result = result.strip()
+
+        irc.reply("{0} :: {1}".format(optinput,result))
+
+    frink = wrap(frink, [('text')])
 
     def geoip(self, irc, msg, args, user):
         """<ip.address>
@@ -183,18 +227,18 @@ class Assorted(callbacks.Plugin):
         if ip != None and city != None and region_code != None:
             output = ircutils.bold(ircutils.underline(ip))
             output += " " + city + " " + region_code
-            output += " (" + longitude + ", " + latitude + ") " 
+            output += " (" + longitude + ", " + latitude + ") "
 
 
         irc.reply(output)
-    
+
     geoip = wrap(geoip, [('somethingWithoutSpaces')])
 
     def mydrunktexts(self, irc, msg, args):
         """
         Display random text from mydrunktexts.com
         """
-        
+
         url = 'http://mydrunktexts.com/random'
 
         try:
@@ -203,18 +247,18 @@ class Assorted(callbacks.Plugin):
         except:
             irc.reply("Failed to open: %s" % url)
             return
-    
+
         soup = BeautifulSoup(u,convertEntities=BeautifulSoup.HTML_ENTITIES)
         txt = soup.find('div', attrs={'class':'bubblecontent'}).getText() # <div class="bubblecontent">
         irc.reply(txt)
-        
+
     mydrunktexts = wrap(mydrunktexts)
 
     def bash(self, irc, msg, args):
         """
         Display a random bash.org quote.
         """
-        
+
         url = 'http://www.bash.org/?random1'
 
         try:
@@ -223,14 +267,14 @@ class Assorted(callbacks.Plugin):
         except:
             irc.reply("Failed to open: %s" % url)
             return
-               
+
         soup = BeautifulSoup(u,convertEntities=BeautifulSoup.HTML_ENTITIES)
         quotes = soup.findAll('p', attrs={'class':'qt'})
         quote = choice(quotes)
         num = quote.findPrevious('b')
 
         irc.reply("[{0}] {1}".format(self._red(num.getText()),quote.getText()))
-        
+
     bash = wrap(bash)
 
     def fml(self, irc, msg, args, getopts):
@@ -246,23 +290,23 @@ class Assorted(callbacks.Plugin):
         except:
             irc.reply("Failed to open: %s" % url)
             return
-            
+
         tree = ElementTree.parse(u)
         document = tree.getroot()
 
         if document.find('code').text != "1":
             irc.reply("Something went wrong doing FML. Try again later.")
             return
-        
+
         gender = tree.find('items/item/author').get('gender') # can be none
         country = tree.find('items/item/author').get('country')
         region = tree.find('items/item/author').get('region')
         category = tree.find('items/item/category').text.encode('utf-8')
         message = tree.find('items/item/text').text.encode('utf-8')
         link = tree.find('items/item/short_url').text
-        
+
         irc.reply("FML: [{0}] {1}".format(category, message))
-    
+
     fml = wrap(fml, [getopts({})])
 
     def powerball(self, irc, msg, args):
@@ -286,14 +330,14 @@ class Assorted(callbacks.Plugin):
         prevpb = soup.findAll('td', attrs={'class':'ResultsText'})[1]
 
         output = "Current jackpot: {0} for {1} :: Previous numbers: {2} from: {3}".format(ircutils.bold(curjackpot.text),\
-            nextpbdate.text, ircutils.bold(prevpb.text), prevpbdate.text)  
+            nextpbdate.text, ircutils.bold(prevpb.text), prevpbdate.text)
         irc.reply(output)
-    
+
     powerball = wrap(powerball)
 
     def megamillions(self, irc, msg, args):
         """Show megamillions numbers."""
-        
+
         url = 'http://www.megamillions.com'
 
         try:
@@ -337,7 +381,7 @@ class Assorted(callbacks.Plugin):
         http://www.zillow.com/howto/api/APIOverview.htm
         Optional: call with the two-letter state code to display specific rates.
         """
-        
+
         # need an API key.
         apiKey = self.registryValue('apiKey')
         if not apiKey or apiKey == "Not set":
@@ -370,19 +414,19 @@ class Assorted(callbacks.Plugin):
 
             o = "The average rate on a 30 year mortgage is %s. Last week it was %s. " + \
             "If you want a 15 year mortgage the average rate is %s. Last week it was %s. " + \
-            "If you're crazy enough to want a 5-1 ARM the average rate is %s. Last week it was %s. " 
+            "If you're crazy enough to want a 5-1 ARM the average rate is %s. Last week it was %s. "
 
             resp = o % (
                 self._red(rates['today']['thirtyYearFixed']), self._red(rates['lastWeek']['thirtyYearFixed']),
                 self._red(rates['today']['fifteenYearFixed']), self._red(rates['lastWeek']['fifteenYearFixed']),
                 self._red(rates['today']['fiveOneARM']), self._red(rates['lastWeek']['fiveOneARM']))
-        
+
             irc.reply(resp)
         else:
             irc.reply("Error: No rates found.")
 
     mortgage = wrap(mortgage, [optional('somethingWithoutSpaces')])
-    
+
     def callook(self, irc, msg, args, optsign):
         """<callsign>
         Lookup specific callsign in radio DB.
@@ -442,7 +486,7 @@ class Assorted(callbacks.Plugin):
         fact = re.search(r'<strong><i>(.*?)</i></strong>', the_page, re.I|re.S)
 
         irc.reply(fact.group(1))
-        
+
     randomfacts = wrap(randomfacts)
 
     def automeme(self, irc, msg, args, number):
@@ -465,20 +509,20 @@ class Assorted(callbacks.Plugin):
 
         for meme in jsondata:
             irc.reply(meme)
-        
+
     automeme = wrap(automeme, [optional("int")])
 
 
     def chucknorris(self, irc, msg, args, opts):
         """
-        Grab a random ChuckNorris from icndb.com. 
+        Grab a random ChuckNorris from icndb.com.
         Use --rainbow to display in a colorful way.
         """
 
         opts = dict(opts)
 
         api_url = 'http://api.icndb.com/jokes/random'
-        
+
         try:
             req = urllib2.Request(api_url)
             stream = urllib2.urlopen(req)
@@ -486,7 +530,7 @@ class Assorted(callbacks.Plugin):
         except urllib2.HTTPError, err:
             self.log.warning("Twitter trends: API returned http error %s" % err.code)
             return
-        
+
         try:
             data = json.loads(datas)
         except:
@@ -506,23 +550,23 @@ class Assorted(callbacks.Plugin):
             joke = self._rainbow(joke)
 
         irc.reply(joke)
-    
+
     chucknorris = wrap(chucknorris, [getopts({'rainbow': ''})])
 
 
     def bitcoin(self, irc, msg, args):
-        """ 
+        """
         Return pretty-printed mtgox ticker in USD.
         """
-        
+
         url = 'https://mtgox.com/code/data/ticker.php'
-        
+
         try:
             html = (urllib2.urlopen(url)).read()
         except:
             irc.error("Failure to retrieve ticker. Try again later.")
             return
-        
+
         ticker = json.loads(html)
         bitcoin = ticker['ticker']
 
@@ -575,7 +619,7 @@ class Assorted(callbacks.Plugin):
         opts = dict(opts)
 
         url = 'http://www.hockeydrunk.com/nerdman/random.php'
-        
+
         # attempt to fetch data
         try:
             request = urllib2.Request(url)
@@ -604,8 +648,8 @@ class Assorted(callbacks.Plugin):
     nerdman = wrap(nerdman, [getopts({'rainbow': ''})])
 
     def fuckingdinner(self, irc, msg, args, opts):
-        """[--veg] 
-        
+        """[--veg]
+
         What the fuck should I make for dinner? Pulls a receipe from http://whatthefuckshouldimakefordinner.com
         If --veg is given, a vegetarian meal will be selected."""
 
@@ -622,7 +666,7 @@ class Assorted(callbacks.Plugin):
             html = utils.web.getUrl(url)
         except utils.web.Error, e:
             irc.error(format('I couldn\'t reach the search page (%s).', e), Raise=True)
-        
+
         soup = BeautifulSoup(html)
         results = soup.findAll('dt')
 
@@ -665,13 +709,13 @@ class Assorted(callbacks.Plugin):
     winewoot = wrap(winewoot)
 
 
-    def woot(self, irc, msg, args):	
+    def woot(self, irc, msg, args):
         """ Display daily woot.com deal."""
 
         url = "http://www.woot.com/salerss.aspx"
-        
+
         dom = xml.dom.minidom.parse(urllib2.urlopen(url))
-      
+
         product = dom.getElementsByTagName("woot:product")[0].childNodes[0].data
         price = dom.getElementsByTagName("woot:price")[0].childNodes[0].data
         purchaseurl = dom.getElementsByTagName("woot:purchaseurl")[0].childNodes[0].data
@@ -688,10 +732,10 @@ class Assorted(callbacks.Plugin):
         output += ircutils.underline(ircutils.bold("URL:")) + " " + self._shortenUrl(purchaseurl) + " "
 
         irc.reply(output)
-	
+
     woot = wrap(woot)
 
-    
+
     def pick(self, irc, msg, args, choices):
         """[choices]
         Picks a random item from choices. Separate the list by a comma.
@@ -709,7 +753,7 @@ class Assorted(callbacks.Plugin):
     def advice(self, irc, msg, args):
         """Grab some advice from http://www.leonatkinson.com/random/
         """
-        
+
         url = "http://www.leonatkinson.com/random/index.php/rest.html?method=advice"
 
         doc = etree.parse(url)
@@ -725,7 +769,7 @@ class Assorted(callbacks.Plugin):
         irc.reply(output)
 
     advice = wrap(advice)
-    
+
     def debt(self, irc, msg, args):
         """Display the debt."""
 
@@ -751,14 +795,14 @@ class Assorted(callbacks.Plugin):
         # format debt
         debt = self._myfloat(strdebt)
         debt = ircutils.bold("$" + self._size_fmt(debt))
-        
+
         # per_person + population just need millify + bold
         per_person = ircutils.bold("$" + self._size_fmt(float(per_person)))
         population = ircutils.bold("$" + self._size_fmt(float(strpopulation)))
 
         irc.reply("As of: %s the US Debt is %s or about %s per person for a population of %s"
         % (asof, debt, per_person, population))
-    
+
     debt = wrap(debt)
 
 
