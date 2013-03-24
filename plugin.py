@@ -595,7 +595,7 @@ class Assorted(callbacks.Plugin):
         Return pretty-printed mtgox ticker in USD.
         """
 
-        url = 'https://mtgox.com/code/data/ticker.php'
+        url = 'https://data.mtgox.com/api/2/BTCUSD/money/ticker'
 
         try:
             html = (urllib2.urlopen(url)).read()
@@ -604,13 +604,16 @@ class Assorted(callbacks.Plugin):
             return
 
         ticker = json.loads(html)
-        bitcoin = ticker['ticker']
+        bitcoin = ticker['data']
 
-        if bitcoin:
-            last = ircutils.mircColor(bitcoin['last'], 'green')
-            vol = ircutils.mircColor(bitcoin['vol'], 'orange')
-            low = ircutils.mircColor(bitcoin['low'], 'blue')
-            high = ircutils.mircColor(bitcoin['high'], 'red')
+        if not bitcoin:
+            irc.reply("Error parsing mtgox API.")
+            return
+        else:
+            last = ircutils.mircColor(bitcoin['last']['display'], 'green')
+            vol = ircutils.mircColor(bitcoin['vol']['display'], 'orange')
+            low = ircutils.mircColor(bitcoin['low']['display'], 'blue')
+            high = ircutils.mircColor(bitcoin['high']['display'], 'red')
 
             output = "Last trade: " + last
             output += "  24hr volume: " + vol
