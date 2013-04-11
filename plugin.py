@@ -602,7 +602,12 @@ class Assorted(callbacks.Plugin):
             irc.error("Failure to retrieve ticker. Try again later.")
             return
 
-        ticker = json.loads(html)
+        try:
+            ticker = json.loads(html)
+        except Exception:
+            irc.reply("Failed to parse JSON from: {0}".format(url))
+            return
+
         bitcoin = ticker['ticker']
 
         if not bitcoin:
