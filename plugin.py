@@ -589,6 +589,42 @@ class Assorted(callbacks.Plugin):
 
     chucknorris = wrap(chucknorris, [getopts({'rainbow': ''})])
 
+    def litecoin(self, irc, msg, args):
+        """
+        Return pretty-printed litecoin ticker in USD.
+        """
+
+        url = 'https://btc-e.com/api/2/ltc_usd/ticker'
+
+        try:
+            html = (urllib2.urlopen(url)).read()
+        except:
+            irc.error("Failure to retrieve ticker. Try again later.")
+            return
+
+        ticker = json.loads(html)
+        bitcoin = ticker['ticker']
+
+        if not bitcoin:
+            irc.reply("Error parsing btc-e.com API at {0}".format(url))
+            return
+        else:
+            last = ircutils.mircColor(bitcoin['last'], 'green')
+            vol = ircutils.mircColor(bitcoin['vol'], 'orange')
+            low = ircutils.mircColor(bitcoin['low'], 'blue')
+            high = ircutils.mircColor(bitcoin['high'], 'red')
+            average = ircutils.mircColor(bitcoin['avg'], 'light blue')
+
+            output = "Last trade: " + last
+            output += "  24hr volume: " + vol
+            output += "  low: " + low
+            output += "  high: " + high
+            output += "  average: " + average
+            output += "  (figures all in USD)"
+
+            irc.reply(output)
+
+    litecoin = wrap(litecoin)
 
     def bitcoin(self, irc, msg, args):
         """
