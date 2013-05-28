@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 ###
-# Copyright (c) 2013, spline
+# Copyright (c) 2012-2013, spline
 # All rights reserved.
 #
 #
 ###
-
 # my libs
 from lxml import etree
 from BeautifulSoup import BeautifulSoup
@@ -13,7 +12,6 @@ import urllib2
 from random import choice
 import json
 import re
-import urllib
 import xml.dom.minidom
 import base64
 import socket
@@ -21,7 +19,6 @@ try:
     import xml.etree.cElementTree as ElementTree
 except ImportError:
     import xml.etree.ElementTree as ElementTree
-
 # supybot libs
 import supybot.utils as utils
 from supybot.commands import *
@@ -89,10 +86,41 @@ class Assorted(callbacks.Plugin):
         return text
 
     def _red(self, string):
-        try:
-            return ircutils.mircColor(string, 'red')
-        except:
-            return string
+
+        return ircutils.mircColor(string, 'red')
+
+    ####################
+    # PUBLIC FUNCTIONS #
+    ####################
+
+    def kernel(self, irc, msg, args):
+        """
+        Display the latest linux kernels from kernel.org.
+        """
+
+        url = 'https://www.kernel.org/releases.json'
+
+        req = urllib2.Request(url)
+        html = (urllib2.urlopen(req)).read()
+        # parse json
+        releases = json.loads(html)
+        # parse json.
+        lateststable = releases['latest_stable']['version']
+        releases = releases['releases']
+        output = []
+        for release in releases:
+            moniker = release['moniker']
+            version = release['version']
+            released = release['released']['isodate']
+            if release['iseol']:
+                output.append("{0} {1} (EOL) {2}".format(moniker, version, released))
+            else:
+                output.append("{0} {1} (EOL) {2}".format(moniker, version, released))
+        # output
+        irc.reply("The latest stable kernel is: {0}".format(lateststable))
+        irc.reply("Others: {0}".format(" | ".join(output)))
+
+    kernel = wrap(kernel)
 
     def b64decode(self, irc, msg, args, optstring):
         """Returns base64 decoded string."""
