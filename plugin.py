@@ -68,6 +68,19 @@ class Assorted(callbacks.Plugin):
             txt = txt.replace(sep, default_sep)
         return [i.strip() for i in txt.split(default_sep)]
 
+    def _numToDottedQuad(self, n):
+        try:
+            n = long(n,16)
+            d = 256 * 256 * 256
+            q = []
+            while d > 0:
+                m,n = divmod(n,d)
+                q.append(str(m))
+                d = d/256
+            return '.'.join(q)
+        except:
+            return False
+
     def _shortenUrl(self, url):
         posturi = "https://www.googleapis.com/urlshortener/v1/url"
         headers = {'Content-Type' : 'application/json'}
@@ -92,6 +105,24 @@ class Assorted(callbacks.Plugin):
     ####################
     # PUBLIC FUNCTIONS #
     ####################
+
+    def hex2ip(self, irc, msg, args, optinput):
+        """<hexip>
+        Try and turn hexIP back into IP address.
+        """
+
+        ip = self._numToDottedQuad(optinput)
+        if ip and len(optinput) == 8:
+            record = socket.gethostbyaddr(ip)[0]  # do dns here.
+            if record:
+                reply = "HexIP: {0} = {1}({2})".format(optinput, ip, record)
+            else:
+                reply = "HexIP: {0} = {1}".format(optinput, ip)
+        else:
+            reply = "ERROR: {0} is an invalid HexIP".format(optinput)
+        irc.reply(reply.encode('utf-8'))
+
+    hex2ip = wrap(hex2ip, (['text']))
 
     def kernel(self, irc, msg, args):
         """
