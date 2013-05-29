@@ -106,6 +106,33 @@ class Assorted(callbacks.Plugin):
     # PUBLIC FUNCTIONS #
     ####################
 
+    def slur(self, irc, msg, args):
+        """
+        Display a random racial slur from the racial slur database (rsdb.org)
+        """
+
+        url = 'http://www.rsdb.org/full'
+        request = urllib2.Request(url)
+        response = (urllib2.urlopen(request))
+        html = response.read()
+        soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES, fromEncoding='utf-8')
+        div = soup.find('div', attrs={'id':'slurs'})
+        rows = div.findAll('tr', attrs={'id':re.compile('slur_.*')})
+
+        slurs = []
+
+        for row in rows:
+            tds = [item.getText().strip() for item in row.findAll('td')]
+            slur = tds[0].encode('utf-8')
+            group = tds[1].encode('utf-8')
+            reasoning = tds[2].encode('utf-8')
+            slurs.append("{0}({1}) :: {2}".format(slur, group, reasoning))
+
+        randomslur = choice(slurs)
+        irc.reply(randomslur)
+
+    slur = wrap(slur)
+
     def hex2ip(self, irc, msg, args, optinput):
         """<hexip>
         Try and turn hexIP back into IP address.
