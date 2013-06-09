@@ -136,9 +136,12 @@ class Assorted(callbacks.Plugin):
     def hex2ip(self, irc, msg, args, optinput):
         """<hexip>
         Try and turn hexIP back into IP address.
+        Ex: 0200A8C0
         """
 
         ip = self._numToDottedQuad(optinput)
+        #ip = '.'.join(str(int(i, 16)) for i in reversed([optinput[i:i+2] for i in range(0, len(optinput), 2)]))
+        irc.reply(ip)
         if ip and len(optinput) == 8:
             record = socket.gethostbyaddr(ip)[0]  # do dns here.
             if record:
@@ -611,6 +614,21 @@ class Assorted(callbacks.Plugin):
 
     randomfacts = wrap(randomfacts)
 
+    def hipster(self, irc, msg, args):
+        """
+        Display a hipstermeme from http://www.automeme.net
+        """
+
+        jsonurl = 'http://api.automeme.net/text.json?lines=1&vocab=hipster'
+        request = urllib2.Request(jsonurl)
+        response = urllib2.urlopen(request)
+        response_data = response.read()
+        jsondata = json.loads(response_data)
+
+        irc.reply(jsondata[0])
+
+    hipster = wrap(hipster)
+
     def automeme(self, irc, msg, args, number):
         """
         Display a meme from http://www.automeme.net
@@ -621,7 +639,6 @@ class Assorted(callbacks.Plugin):
             number = number
         else:
             number = 1
-
 
         jsonurl = 'http://api.automeme.net/text.json?lines=%s' % number
         request = urllib2.Request(jsonurl)
