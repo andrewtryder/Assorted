@@ -57,7 +57,7 @@ class Assorted(callbacks.Plugin):
 
     def _lightblue(self, string):
         """Returns a light blue string."""
-        return ircutils.mircColor(string, 'lightblue')
+        return ircutils.mircColor(string, 'light blue')
 
     def _orange(self, string):
         """Returns an orange string."""
@@ -649,7 +649,7 @@ class Assorted(callbacks.Plugin):
             low = self._blue(bitcoin['low'])
             high = self._red(bitcoin['high'])
             average = self._lightblue(bitcoin['avg'])
-            irc.reply("Last Litecoin trade: {0}  24hr Vol: {1}  low: {2}  high: {3}  avg: {4} (USD)".format(last, vol, low, high, average))
+            irc.reply("Last Litecoin(btc-e.com) trade: {0}  24hr Vol: {1}  low: {2}  high: {3}  avg: {4} (USD)".format(last, vol, low, high, average))
 
     litecoin = wrap(litecoin)
 
@@ -675,7 +675,7 @@ class Assorted(callbacks.Plugin):
             low = self._blue(bitcoin['low'])
             high = self._red(bitcoin['high'])
             average = self._lightblue(bitcoin['avg'])
-            irc.reply("Last Bitcoin trade: {0}  24hr Vol: {1}  low: {2}  high: {3}  avg: {4} (USD)".format(last, vol, low, high, average))
+            irc.reply("Last Bitcoin(btc-e.com) trade: {0}  24hr Vol: {1}  low: {2}  high: {3}  avg: {4} (USD)".format(last, vol, low, high, average))
 
     bitcoin = wrap(bitcoin)
 
