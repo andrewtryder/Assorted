@@ -13,6 +13,7 @@ from random import choice
 import json
 import re
 import xml.dom.minidom
+import feedparser
 from base64 import b64encode, b64decode
 import socket
 try:
@@ -678,6 +679,33 @@ class Assorted(callbacks.Plugin):
             irc.reply("Last Bitcoin(btc-e.com) trade: {0}  24hr Vol: {1}  low: {2}  high: {3}  avg: {4} (USD)".format(last, vol, low, high, average))
 
     bitcoin = wrap(bitcoin)
+
+    def hackernews(self, irc, msg, args):
+        """
+        Display top hackernews.com headlines.
+        """
+
+        # construct and fetch url.
+        url = 'https://news.ycombinator.com/rss'
+        html = self._httpget(url)
+        if not html:  # http fetch breaks.
+            irc.reply("ERROR: Trying to open: {0}".format(url))
+            return
+
+        # parse RSS.
+        rss = html.decode('utf-8')
+        rss = feedparser.parse(rss)
+        items = rss['entries']
+        # process each item and output.
+        for item in items[0:5]:
+            title = item.title.encode('utf-8')  # get title and encode.
+            title = utils.str.ellipsisify(title, 150)
+            url = item.link
+            url = self._shortenUrl(url)
+            comments = self._shortenUrl(item.comments)
+            irc.reply("{0} - {1} :: Comments {2}".format(title, url, comments))
+
+    hackernews = wrap(hackernews)
 
     def isitdown(self, irc, msg, args, url):
         """<url>
