@@ -748,6 +748,7 @@ class Assorted(callbacks.Plugin):
         """
 
         url = 'http://pages.cs.wisc.edu/~ballard/bofh/excuses'
+        # url = 'http://pgl.yoyo.org/bofh/excuses.txt'
         html = self._httpget(url)
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
