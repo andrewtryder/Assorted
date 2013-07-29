@@ -742,6 +742,23 @@ class Assorted(callbacks.Plugin):
 
     developerexcuses = wrap(developerexcuses)
 
+    def bofh(self, irc, msg, args):
+        """
+        Returns an excuse from http://pages.cs.wisc.edu/~ballard/bofh/
+        """
+
+        url = 'http://pages.cs.wisc.edu/~ballard/bofh/excuses'
+        html = self._httpget(url)
+        if not html:  # http fetch breaks.
+            irc.reply("ERROR: Trying to open: {0}".format(url))
+            return
+
+        lines = html.splitlines()
+        randomline = choice(lines)
+        irc.reply("Random BOFH excuse :: {0}".format(randomline))
+
+    bofh = wrap(bofh)
+
     def macvendor(self, irc, msg, args, optinput):
         """<MA:C:ADDRESS>
 
