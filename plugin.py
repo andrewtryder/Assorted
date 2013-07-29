@@ -725,6 +725,23 @@ class Assorted(callbacks.Plugin):
 
     isitdown = wrap(isitdown, [('somethingWithoutSpaces')])
 
+    def developerexcuses(self, irc, msg, args):
+        """
+        Returns an excuse from http://developerexcuses.com
+        """
+
+        url = 'http://developerexcuses.com'
+        html = self._httpget(url)
+        if not html:  # http fetch breaks.
+            irc.reply("ERROR: Trying to open: {0}".format(url))
+            return
+
+        soup = BeautifulSoup(html)
+        text = soup.find('center').getText()
+        irc.reply("{0}".format(text))
+
+    developerexcuses = wrap(developerexcuses)
+
     def macvendor(self, irc, msg, args, optinput):
         """<MA:C:ADDRESS>
 
