@@ -780,7 +780,7 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: {0}".format(html))
         else:
             jsd = json.loads(html)[0]
-            out = "{0}-{1} :: {2} {3}".format(jsd['starthex'], jsd['endhex'], jsd['company'], jsd['country'])
+            out = "{0}-{1} :: {2} {3}".format(jsd['startHex'], jsd['endHex'], jsd['company'], jsd['country'])
             irc.reply(out)
 
     macvendor = wrap(macvendor, [('somethingWithoutSpaces')])
