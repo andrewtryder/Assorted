@@ -374,7 +374,7 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        soup = BeautifulSoup(u,convertEntities=BeautifulSoup.HTML_ENTITIES)
+        soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
         txt = soup.find('div', attrs={'class':'bubblecontent'}).getText() # <div class="bubblecontent">
         irc.reply(txt)
 
