@@ -457,25 +457,12 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        soup = BeautifulSoup(html.replace('&nbsp;',' '))
-        est = soup.find('div', attrs={'id':'estimated_amount'}).find('span', attrs={'class':'yellow_text'})
-        dd = soup.find('div', attrs={'id':'estimated_amount'}).find('span', attrs={'class':'yellow_text_sm'})
-
-        url = 'http://www.megamillions.com/numbers/'
-        html = self._httpget(url)
-        if not html:  # http fetch breaks.
-            irc.reply("ERROR: Trying to open: {0}".format(url))
-            return
-        html = html.replace('&nbsp;',' ')
+        html = html.replace('&nbsp;', ' ')
         soup = BeautifulSoup(html)
+        one = soup.find('div', attrs={'class':'home-next-drawing-estimated-jackpot'}).getText()
+        three = soup.find('table', attrs={'class':'home-mini-winning-numbers-widget'}).getText(separator=' ')
 
-        prev = soup.find('h1')
-        table = soup.find('table', attrs={'width':'90%'})
-        images = table.findAll('img', attrs={'src': re.compile('\.\./images.*?')})
-        prevnum = ' '.join(i['alt'] for i in images)
-
-        output = "{0} {1} :: {2} are {3}".format(self._bold(est.renderContents()), dd.renderContents(), prev.renderContents(), self._bold(prevnum))
-        irc.reply(output)
+        irc.reply("{0}: {1} || {2}".format(self._bold("MEGAMILLIONS"), one, three))
 
     megamillions = wrap(megamillions)
 
