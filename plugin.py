@@ -785,31 +785,6 @@ class Assorted(callbacks.Plugin):
 
     macvendor = wrap(macvendor, [('somethingWithoutSpaces')])
 
-    def isohunt(self, irc, msg, args, optinput):
-        """<term>
-
-        Search isohunt.com for things.
-        """
-
-        url = 'http://ca.isohunt.com/js/json.php?ihq=%s&sort=seeds&rows=5' % (optinput)
-        html = self._httpget(url)
-        if not html:  # http fetch breaks.
-            irc.reply("ERROR: Trying to open: {0}".format(url))
-            return
-
-        jsd = json.loads(html)
-        if jsd['total_results'] == 0:
-            irc.reply("Sorry, I didn't find any matching results for '{0}' on isohunt.com".format(optinput))
-            return
-
-        results = jsd['items']['list']
-        for result in results:
-            title = result['title'].replace('<b>', '').replace('</b>', '')
-            title = utils.str.ellipsisify(title, 55)
-            irc.reply("{0} :: {1} (S: {2}/L: {3}) {4}".format(title, result['link'], result['Seeds'], result['leechers'], result['size']))
-
-    isohunt = wrap(isohunt, [('text')])
-
     def nerdman(self, irc, args, msg, opts):
         """
         Display one of nerdman's wonderful quotes.
