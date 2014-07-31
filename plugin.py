@@ -641,6 +641,32 @@ class Assorted(callbacks.Plugin):
 
     litecoin = wrap(litecoin)
 
+    def dogecoin(self, irc, msg, args):
+        """
+        Return current Dogecoin ticker in USD.
+        """
+        
+        url = 'http://data.bter.com/api/1/ticker/doge_cny'
+        html = self._httpget(url)
+        if not html:  # http fetch breaks.
+            irc.reply("ERROR: Trying to open: {0}".format(url))
+            return
+        
+        ticker = json.loads(html)
+        if 'result' not in ticker:
+            irc.reply("Error parsing bter API at {0}".format(url))
+            return
+        else:
+            bitcoin = ticker
+            last = self._green(bitcoin['last'])
+            vol = self._orange(bitcoin['vol_doge'])
+            low = self._blue(bitcoin['low'])
+            high = self._red(bitcoin['high'])
+            average = self._lightblue(bitcoin['avg'])
+            irc.reply("Last Dogecoin(bter.com) trade: {0}  24hr Vol: {1}  low: {2}  high: {3}  avg: {4} (USD)".format(last, vol, low, high, average))
+            
+    dogecoin = wrap(dogecoin)
+
     def bitcoin(self, irc, msg, args):
         """
         Return pretty-printed bitcoin ticker in USD.
