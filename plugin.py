@@ -157,6 +157,24 @@ class Assorted(callbacks.Plugin):
     # PUBLIC FUNCTIONS #
     ####################
 
+    def catfacts(self, irc, msg, args):
+        """
+        Display random factfact.
+        """
+        
+        url = 'http://catfacts-api.appspot.com/api/facts'
+        html = self._httpget(url)
+        if not html:  # http fetch breaks.
+            irc.reply("ERROR: Trying to open: {0}".format(url))
+            return
+        # process html
+        jsondata = json.loads(html)
+        fact = jsondata.get('facts')
+        if fact:
+            irc.reply(fact[0].encode('utf-8'))
+    
+    catfacts = wrap(catfacts)
+
     def catpix(self, irc, msg, args):
         """
         Display random catpic from /r/cats
