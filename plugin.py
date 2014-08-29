@@ -16,6 +16,7 @@ import xml.dom.minidom
 import feedparser
 from base64 import b64encode, b64decode
 import socket
+import random
 try:
     import xml.etree.cElementTree as ElementTree
 except ImportError:
@@ -155,6 +156,30 @@ class Assorted(callbacks.Plugin):
     ####################
     # PUBLIC FUNCTIONS #
     ####################
+
+    def catpix(self, irc, msg, args):
+        """
+        Display random catpic from /r/cats
+        """
+
+        url = 'http://imgur.com/r/cats'
+        html = self._httpget(url)
+        if not html:  # http fetch breaks.
+            irc.reply("ERROR: Trying to open: {0}".format(url))
+            return
+        # process html
+        soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES, fromEncoding='utf-8')
+        px = soup.findAll('div', attrs={'class':'post'})
+        zz = []
+        for p in px:
+            l = 'http://imgur.com' + p.find('a')['href']
+            t = p.find('p').getText().encode('utf-8')
+            zz.append({'l':l, 't':t})
+        # output
+        o = random.choice(zz)
+        irc.reply("{0} :: {1}".format(o['t'], o['l']))
+
+    catpix = wrap(catpix)
 
     def slur(self, irc, msg, args):
         """
