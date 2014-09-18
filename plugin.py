@@ -763,24 +763,6 @@ class Assorted(callbacks.Plugin):
 
     hackernews = wrap(hackernews)
 
-    def isitdown(self, irc, msg, args, url):
-        """<url>
-        Returns the response from http://www.downforeveryoneorjustme.com/
-        """
-
-        site = 'http://downforeveryoneorjustme.com/'
-        url = re.sub(r'^.*?://', r'', url)
-        html = self._httpget(site+url)
-        if not html:  # http fetch breaks.
-            irc.reply("ERROR: Trying to open: {0}".format(url))
-            return
-
-        soup = BeautifulSoup(html)
-        response = soup.div.contents[0].strip()
-        irc.reply("{0} :: {1}".format(url, response))
-
-    isitdown = wrap(isitdown, [('somethingWithoutSpaces')])
-
     def developerexcuses(self, irc, msg, args):
         """
         Returns an excuse from http://developerexcuses.com
