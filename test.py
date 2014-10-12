@@ -20,6 +20,16 @@ class AssortedTestCase(PluginTestCase):
         self.assertResponse('b64decode aGVsbG8=', 'hello')
         self.assertResponse('b64encode hello', 'aGVsbG8=')
         self.assertNotError('bash')
+        self.assertNotError('bitcoin')
+        self.assertNotError('bofh')
+        self.assertNotError('callook W1JDD')
+        self.assertNotError('catfacts')
+        self.assertNotError('catpix')
+        self.assertNotError('chucknorris')
+        self.assertNotError('debt')
+        self.assertNotError('developerexcuses')
+        self.assertNotError('dogecoin')
+        self.assertNotError('fml')
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
