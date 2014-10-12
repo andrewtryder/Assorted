@@ -29,7 +29,7 @@ class AssortedTestCase(PluginTestCase):
         self.assertNotError('debt')
         self.assertNotError('developerexcuses')
         self.assertNotError('dogecoin')
-        self.assertRegexp('frink 2+2', '2+2 :: 4')
+        self.assertResponse('frink 2+2', '2+2 :: 4')
         self.assertNotError('fuckingdinner')
         self.assertNotRegExp('geoip 209.94.100.100', 'ERROR')
         self.assertNotError('hackernews')
