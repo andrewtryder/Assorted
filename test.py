@@ -29,7 +29,11 @@ class AssortedTestCase(PluginTestCase):
         self.assertNotError('debt')
         self.assertNotError('developerexcuses')
         self.assertNotError('dogecoin')
-        self.assertNotError('fml')
+        self.assertRegexp('frink 2+2', '2+2 :: 4')
+        self.assertNotError('fuckingdinner')
+        self.assertNotRegExp('geoip 209.94.100.100', 'ERROR')
+        self.assertNotError('hackernews')
+        self.assertResponse('hex2ip 0200A8C0', 'HexIP: 0200A8C0 = ANantes-654-1-213-192.w2-0.abo.wanadoo.fr(2.0.168.192)')
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
