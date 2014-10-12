@@ -1,0 +1,4 @@
+git+https://github.com/ProgVal/Limnoria.git
+lxml==3.4.0
+BeautifulSoup==3.2.1
+feedparser==5.1.3
