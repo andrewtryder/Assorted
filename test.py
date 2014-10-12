@@ -38,6 +38,16 @@ class AssortedTestCase(PluginTestCase):
         self.assertNotError('kernel')
         self.assertNotError('litecoin')
         self.assertResponse('macvendor 0023AE000022', '0023AE000000-0023AEFFFFFF :: Dell Inc. UNITED STATES')
+        self.assertNotError('megamillions')
+        self.assertNotError('mortgage')
+        self.assertNotError('mydrunktexts')
+        self.assertNotError('nerdman')
+        self.assertNotError('pick 1,2')
+        self.assertResponse('piglatin hello to you', 'ellohay otay ouyay')
+        self.assertNotError('powerball')
+        self.assertNotError('randomfacts')
+        self.assertNotError('slur')
+        self.assertNotError('woot')
 
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
