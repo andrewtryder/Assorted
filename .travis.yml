@@ -14,6 +14,7 @@ notifications:
     irc:
       channels:
         - "irc.efnet.net#supybot"
+    webhooks: http://n.tkte.ch/h/3502/JH6vGoWLR6ouZEo9wPqbEedi
 matrix:
     fast_finish: true
 
