@@ -216,7 +216,7 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         # process html
-        soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES, fromEncoding='utf-8')
+        soup = BeautifulSoup(html) #, convertEntities=BeautifulSoup.HTML_ENTITIES, fromEncoding='utf-8')
         div = soup.find('div', attrs={'id':'slurs'})
         rows = div.findAll('tr', attrs={'id':re.compile('slur_.*')})
 
@@ -422,7 +422,7 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
+        soup = BeautifulSoup(html) #, convertEntities=BeautifulSoup.HTML_ENTITIES)
         txt = soup.find('div', attrs={'class':'bubblecontent'}).getText() # <div class="bubblecontent">
         irc.reply(txt)
 
@@ -438,7 +438,7 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        soup = BeautifulSoup(html, convertEntities=BeautifulSoup.HTML_ENTITIES)
+        soup = BeautifulSoup(html) #, convertEntities=BeautifulSoup.HTML_ENTITIES)
         quotes = soup.findAll('p', attrs={'class':'qt'})
         quote = choice(quotes)
         num = quote.findPrevious('b')
