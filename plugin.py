@@ -7,8 +7,12 @@
 ###
 # my libs
 from lxml import etree
-from BeautifulSoup import BeautifulSoup
-import urllib2
+from bs4 import BeautifulSoup
+import sys
+if sys.version_info[0] == "3":
+    import urllib.request, urllib.error, urllib.parse
+else:
+    import urllib2
 from random import choice
 import json
 import re
@@ -39,7 +43,8 @@ class Assorted(callbacks.Plugin):
     ##############
 
     def _rainbow(self, text):
-        text = ''.join([ircutils.mircColor(x, choice(ircutils.mircColors.keys())) for x in text])
+        text = ''.join([ircutils.mircColor(x, choice(list(ircutils.mircColors.keys()))) for x in text])
+        #  text = ''.join([ircutils.mircColor(x, choice(ircutils.mircColors.keys())) for x in text])
         return text
 
     def _red(self, string):
@@ -103,8 +108,8 @@ class Assorted(callbacks.Plugin):
                     midle_string.remove(".")
                 out_string = str.replace("".join(midle_string), ",", ".")
             return float(out_string)
-        except ValueError, error:
-            print "%s\n%s" %(errormsg, error)
+        except ValueError as error:
+            print("%s\n%s" %(errormsg, error))
             return None
 
     def _splitinput(self, txt, seps):
@@ -115,7 +120,7 @@ class Assorted(callbacks.Plugin):
 
     def _numToDottedQuad(self, n):
         try:
-            n = long(n,16)
+            n = int(n,16)
             d = 256 * 256 * 256
             q = []
             while d > 0:
@@ -138,7 +143,7 @@ class Assorted(callbacks.Plugin):
             else:
                 page = utils.web.getUrl(url)
             return page
-        except utils.web.Error as e:
+        except Exception as e:
             self.log.error("ERROR opening {0} message: {1}".format(url, e))
             return None
 
@@ -290,7 +295,7 @@ class Assorted(callbacks.Plugin):
 
         try:
             irc.reply(b64decode(optstring))
-        except Exception, e:
+        except Exception as e:
             irc.reply("ERROR: decoding '{0}' :: {1}".format(optstring, e))
 
     b64decode = wrap(b64decode, [('somethingWithoutSpaces')])
@@ -300,7 +305,7 @@ class Assorted(callbacks.Plugin):
 
         try:
             irc.reply(b64encode(optstring))
-        except Exception, e:
+        except Exception as e:
             irc.reply("ERROR: encoding '{0}' :: {1}".format(optstring, e))
 
     b64encode = wrap(b64encode, [('somethingWithoutSpaces')])
@@ -890,7 +895,10 @@ class Assorted(callbacks.Plugin):
         if 'wine' in opts:  # option for vegetarian
             url = 'http://wine.woot.com/salerss.aspx'
 
-        dom = xml.dom.minidom.parse(urllib2.urlopen(url))
+        if sys.version_info[0] == "3":
+            dom = xml.dom.minidom.parse(urllib.request.urlopen(url))
+        else:
+            dom = xml.dom.minidom.parse(urllib2.urlopen(url))
 
         product = dom.getElementsByTagName("woot:product")[0].childNodes[0].data
         price = dom.getElementsByTagName("woot:price")[0].childNodes[0].data
