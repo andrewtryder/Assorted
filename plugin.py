@@ -769,7 +769,7 @@ class Assorted(callbacks.Plugin):
             if sys.version[0] == 3:
                 title = item.title
             else:
-                title = item.title.encode('utf-8')  # get title and encode.
+                title = item.title.encode('utf-8')
             title = utils.str.ellipsisify(title, 150)
             url = item.link
             comments = item.comments            
