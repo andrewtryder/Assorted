@@ -823,7 +823,7 @@ class Assorted(callbacks.Plugin):
         if 'wine' in opts:  # option for vegetarian
             url = 'http://wine.woot.com/salerss.aspx'
 
-        if sys.version_info[0] == "3":
+        if sys.version_info[0] == 3:
             dom = xml.dom.minidom.parse(urllib.request.urlopen(url))
         else:
             dom = xml.dom.minidom.parse(urllib2.urlopen(url))
