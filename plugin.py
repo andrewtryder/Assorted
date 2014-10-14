@@ -769,8 +769,7 @@ class Assorted(callbacks.Plugin):
             title = item.title.encode('utf-8')  # get title and encode.
             title = utils.str.ellipsisify(title, 150)
             url = item.link
-            # url = self._shortenUrl(url)
-            # comments = self._shortenUrl(item.comments)
+            comments = item.comments            
             irc.reply("{0} - {1} :: Comments {2}".format(title, url, comments))
 
     hackernews = wrap(hackernews)
