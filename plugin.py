@@ -18,8 +18,8 @@ import json
 import re
 import xml.dom.minidom
 import feedparser
-from base64 import b64encode, b64decode
-import socket
+import base64
+#import socket
 import random
 try:
     import xml.etree.cElementTree as ElementTree
@@ -310,7 +310,11 @@ class Assorted(callbacks.Plugin):
         """Returns base64 decoded string."""
 
         try:
-            irc.reply(b64decode(optstring))
+            if sys.version_info[0] == 3:
+                s = base64.b64decode(optstring.encode('utf-8'))
+                irc.reply(s)
+            else:
+                irc.reply(base64.b64decode(optstring))
         except Exception as e:
             irc.reply("ERROR: decoding '{0}' :: {1}".format(optstring, e))
 
@@ -320,7 +324,11 @@ class Assorted(callbacks.Plugin):
         """Returns bas64 encoded string."""
 
         try:
-            irc.reply(b64encode(optstring))
+            if sys.version_info[0] == 3:
+                s = base64.b64encode(bytes(optstring, "utf-8"))
+                irc.reply(s.decode('utf-8'))
+            else:
+                irc.reply(base64.b64encode(optstring))
         except Exception as e:
             irc.reply("ERROR: encoding '{0}' :: {1}".format(optstring, e))
 
