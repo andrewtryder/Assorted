@@ -4,11 +4,13 @@ python:
   - "3.4"
 # command to install dependencies, 
 install:
-    - pip install -vr requirements.txt
+  - pip install -vr requirements.txt
+  - pip install coveralls
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - cd .. && supybot-test Assorted
+  - py.test coveralls/tests.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
 after_success:
   - coveralls
 notifications:
