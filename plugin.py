@@ -802,6 +802,10 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
+        
+        # decode.
+        if sys.version_info[0] == 3:
+            html = html.decode('utf-8')
 
         if 'rainbow' in opts:
             irc.reply("<nerdman> {0}".format(self._rainbow(html)))
