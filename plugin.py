@@ -496,7 +496,7 @@ class Assorted(callbacks.Plugin):
         # process html.
         html = html.decode('iso-8859-1')
         soup = BeautifulSoup(html) #.replace('&nbsp;',''))
-        self.log.info("orig: {0}".format(soup.original_encoding))
+ 
         nextpbdate = soup.findAll('div', attrs={'class':'BluebarSmText'})[2]
         prevpbdate = soup.findAll('div', attrs={'class':'BluebarSmText'})[3]
         curjackpot = soup.findAll('td', attrs={'class':'JackpotText'})[1]
@@ -529,7 +529,10 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        html = html.replace('&nbsp;', ' ')
+
+        if sys.version_info[0] == 2:
+            html = html.replace('&nbsp;', ' ')
+        
         soup = BeautifulSoup(html)
         one = soup.find('div', attrs={'class':'home-next-drawing-estimated-jackpot'}).getText()
         three = soup.find('table', attrs={'class':'home-mini-winning-numbers-widget'}).getText(separator=' ')
