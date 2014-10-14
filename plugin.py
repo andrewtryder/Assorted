@@ -766,7 +766,10 @@ class Assorted(callbacks.Plugin):
         items = rss['entries']
         # process each item and output.
         for item in items[0:5]:
-            title = item.title.encode('utf-8')  # get title and encode.
+            if sys.version[0] == 3:
+                title = item.title
+            else:
+                title = item.title.encode('utf-8')  # get title and encode.
             title = utils.str.ellipsisify(title, 150)
             url = item.link
             comments = item.comments            
