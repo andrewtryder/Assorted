@@ -258,7 +258,7 @@ class Assorted(callbacks.Plugin):
     #    # output.
     #    irc.reply(reply)
 
-    hex2ip = wrap(hex2ip, (['somethingWithoutSpaces']))
+    #hex2ip = wrap(hex2ip, (['somethingWithoutSpaces']))
 
     def kernel(self, irc, msg, args):
         """
