@@ -6,7 +6,7 @@ python:
   - "pypy3"
 # command to install dependencies, 
 install:
-    - pip install -vr requirements.txt||true
+    - pip install -vr requirements.txt
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
