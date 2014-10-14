@@ -466,7 +466,7 @@ class Assorted(callbacks.Plugin):
         quotes = soup.findAll('p', attrs={'class':'qt'})
         quote = choice(quotes)
         num = quote.findPrevious('b').getText()
-        quote = quote.getText().encode('utf-8').replace("\n", " ").replace("\r", " ")
+        quote = quote.getText().replace("\n", " ").replace("\r", " ")
         quote = utils.str.normalizeWhitespace(quote)
         irc.reply("[{0}] {1}".format(num, quote))
 
