@@ -441,8 +441,8 @@ class Assorted(callbacks.Plugin):
         soup = BeautifulSoup(html)
         quotes = soup.findAll('p', attrs={'class':'qt'})
         quote = choice(quotes)
-        if sys.version_info[0] == 3:
-            quote = quote.decode('utf-8')
+        #if sys.version_info[0] == 3:
+        #    quote = quote.decode('utf-8')
         num = quote.findPrevious('b').getText()
         quote = quote.getText().replace("\n", " ").replace("\r", " ")
         quote = utils.str.normalizeWhitespace(quote)
