@@ -147,16 +147,16 @@ class Assorted(callbacks.Plugin):
             self.log.error("ERROR opening {0} message: {1}".format(url, e))
             return None
 
-    def _shortenUrl(self, url):
-        """Shortens a long URL into a short one."""
-
-        try:
-            posturi = "https://www.googleapis.com/urlshortener/v1/url"
-            data = json.dumps({'longUrl' : url})
-            request = self._httpget(posturi, h={'Content-Type':'application/json'}, d=data, l=False)
-            return json.loads(request)['id']
-        except:
-            return url
+    #def _shortenUrl(self, url):
+    #    """Shortens a long URL into a short one."""
+    #
+    #    try:
+    #        posturi = "https://www.googleapis.com/urlshortener/v1/url"
+    #        data = json.dumps({'longUrl' : url})
+    #        request = self._httpget(posturi, h={'Content-Type':'application/json'}, d=data, l=False)
+    #        return json.loads(request)['id']
+    #    except:
+    #        return url
 
     ####################
     # PUBLIC FUNCTIONS #
@@ -729,8 +729,8 @@ class Assorted(callbacks.Plugin):
             title = item.title.encode('utf-8')  # get title and encode.
             title = utils.str.ellipsisify(title, 150)
             url = item.link
-            url = self._shortenUrl(url)
-            comments = self._shortenUrl(item.comments)
+            # url = self._shortenUrl(url)
+            # comments = self._shortenUrl(item.comments)
             irc.reply("{0} - {1} :: Comments {2}".format(title, url, comments))
 
     hackernews = wrap(hackernews)
@@ -850,7 +850,8 @@ class Assorted(callbacks.Plugin):
 
         output += self._bu("ITEM:") + " " + product + " "
         output += self._bu("PRICE:") + " " + price + " (Shipping:" + shipping + ") "
-        output += self._bu("URL:") + " " + self._shortenUrl(purchaseurl) + " "
+        output += self._bu("URL:") + " " + purchaseurl + " "
+        #output += self._bu("URL:") + " " + self._shortenUrl(purchaseurl) + " "
 
         irc.reply(output)
 
