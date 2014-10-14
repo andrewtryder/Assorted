@@ -655,6 +655,9 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
 
+        if sys.version_info[0] == 3:
+            html = html.decode('utf-8')
+
         data = json.loads(html)
 
         if (data['value']['joke']):
