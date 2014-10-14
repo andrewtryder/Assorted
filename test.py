@@ -12,7 +12,8 @@ class AssortedTestCase(PluginTestCase):
         
     def testAssortedRegexp(self):
         self.assertRegexp('kernel', '[latest stable|Others]', re.I)
-    
+        # self.assertNotError('kernel')    
+
     def testDebt(self):
         try:
             self.assertRegexp('debt', 'As of')
@@ -52,25 +53,51 @@ class AssortedTestCase(PluginTestCase):
         self.assertNotError('dogecoin')
         self.assertNotError('litecoin')
         self.assertNotError('bitcoin')
-        #self.assertResponse('frink 2+2', '2+2 :: 4')
-        #self.assertNotError('fuckingdinner')
-        #self.assertNotRegExp('geoip 209.94.100.100', 'ERROR')
-        #self.assertResponse('macvendor 0023AE000022', '0023AE000000-0023AEFFFFFF :: Dell Inc. UNITED STATES')
-        #self.assertNotError('macvendor 0023AE000022')
-        #self.assertNotError('megamillions')
-        #self.assertNotError('mortgage')
-        #self.assertNotError('mydrunktexts')
-        #self.assertNotError('nerdman')
-        #self.assertNotError('pick 1,2')
-        #self.assertResponse('piglatin hello to you', 'ellohay otay ouyay')
-        #self.assertNotError('piglatin hello to you')
-        #self.assertNotError('powerball')
-        #self.assertNotError('randomfacts')
-        #self.assertNotError('slur')
-        #self.assertNotError('woot')
-        #self.assertNotError('hackernews')
     
-    #def testKernel(self):
-    #    self.assertNotError('kernel')        
+    def testFrink(self):
+        self.assertResponse('frink 2+2', '2+2 :: 4')
+    
+    #def testFuckingDinner(self):
+        #self.assertNotError('fuckingdinner')
+    
+    def testGeoIP(self):
+        self.assertNotRegexp('geoip 209.94.100.100', 'ERROR')
+    
+    def testMacVendor(self):
+        self.assertResponse('macvendor 0023AE000022', '0023AE000000-0023AEFFFFFF :: Dell Inc. UNITED STATES')
+        #self.assertNotError('macvendor 0023AE000022')
+    
+    def testLotto(self):
+        self.assertNotError('megamillions')
+        self.assertNotError('powerball')
+    
+    def testMortgage(self):    
+        self.assertNotError('mortgage')
+        
+    def testMyDrunkTexts(self):
+        self.assertNotError('mydrunktexts')
+    
+    def testNerdman(self):   
+        self.assertNotError('nerdman')
+    
+    def testPick(self):
+        self.assertNotError('pick 1,2')
+    
+    def testPiglatin(self):
+        self.assertResponse('piglatin hello to you', 'ellohay otay ouyay')
+        #self.assertNotError('piglatin hello to you')
+        
+    def testRandomFacts(self):
+        self.assertNotError('randomfacts')
+    
+    #def testSlur(self):
+        #self.assertNotError('slur')
+    
+    def testWoot(self):
+        self.assertNotError('woot')
+    
+    def testHackerNews(self):
+        self.assertNotError('hackernews')
+    
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=79:
