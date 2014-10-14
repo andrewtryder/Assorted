@@ -530,13 +530,12 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
 
-        if sys.version_info[0] == 2:
-            html = html.replace('&nbsp;', ' ')
-        
         soup = BeautifulSoup(html)
         one = soup.find('div', attrs={'class':'home-next-drawing-estimated-jackpot'}).getText()
+        one = utils.str.normalizeWhitespace(one.replace('\r', '').replace('\n', ''))
         three = soup.find('table', attrs={'class':'home-mini-winning-numbers-widget'}).getText(separator=' ')
-
+        three = utils.str.normalizeWhitespace(three.replace('\r', '').replace('\n', ''))
+        
         irc.reply("{0}: {1} || {2}".format(self._bold("MEGAMILLIONS"), one, three))
 
     megamillions = wrap(megamillions)
