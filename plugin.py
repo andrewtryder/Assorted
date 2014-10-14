@@ -601,7 +601,7 @@ class Assorted(callbacks.Plugin):
             return
         
         if sys.version_info[0] == 3:
-            html = html.decode('utf-8')
+            html = html.decode('windows-1252')
 
         fact = re.search(r'<strong><i>(.*?)</i></strong>', html, re.I|re.S)
         irc.reply(fact.group(1))
