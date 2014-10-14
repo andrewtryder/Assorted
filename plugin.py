@@ -699,7 +699,11 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         
-        ticker = json.loads(html)
+        if sys.version_info[0] == 3:
+            ticker = json.loads(html.decode('utf-8'))
+        else:
+            ticker = json.loads(html)
+
         if 'result' not in ticker:
             irc.reply("Error parsing bter API at {0}".format(url))
             return
@@ -725,7 +729,11 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
 
-        ticker = json.loads(html)
+        if sys.version_info[0] == 3:
+            ticker = json.loads(html.decode('utf-8'))
+        else:
+            ticker = json.loads(html)
+
         if 'ticker' not in ticker:
             irc.reply("Error parsing btc-e.com API at {0}".format(url))
             return
