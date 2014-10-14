@@ -312,7 +312,7 @@ class Assorted(callbacks.Plugin):
         try:
             if sys.version_info[0] == 3:
                 s = base64.b64decode(optstring.encode('utf-8'))
-                irc.reply(s)
+                irc.reply(s.decode('utf-8'))
             else:
                 irc.reply(base64.b64decode(optstring))
         except Exception as e:
