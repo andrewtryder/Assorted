@@ -118,18 +118,18 @@ class Assorted(callbacks.Plugin):
             txt = txt.replace(sep, default_sep)
         return [i.strip() for i in txt.split(default_sep)]
 
-    def _numToDottedQuad(self, n):
-        try:
-            n = int(n,16)
-            d = 256 * 256 * 256
-            q = []
-            while d > 0:
-                m,n = divmod(n,d)
-                q.append(str(m))
-                d = d/256
-            return '.'.join(q)
-        except:
-            return False
+    #def _numToDottedQuad(self, n):
+    #    try:
+    #        n = int(n,16)
+    #        d = 256 * 256 * 256
+    #        q = []
+    #        while d > 0:
+    #            m,n = divmod(n,d)
+    #            q.append(str(m))
+    #            d = d/256
+    #        return '.'.join(q)
+    #    except:
+    #        return False
 
     def _httpget(self, url, h=None, d=None, l=True):
         """General HTTP resource fetcher. Pass headers via h, data via d, and to log via l."""
@@ -234,29 +234,29 @@ class Assorted(callbacks.Plugin):
 
     slur = wrap(slur)
 
-    def hex2ip(self, irc, msg, args, optinput):
-        """<hexip>
-        Try and turn hexIP back into IP address.
-        Ex: 0200A8C0
-        """
-
-        ip = self._numToDottedQuad(optinput)
-        #ip = '.'.join(str(int(i, 16)) for i in reversed([optinput[i:i+2] for i in range(0, len(optinput), 2)]))
-
-        if ip and len(optinput) == 8:
-            try:
-                record = socket.gethostbyaddr(ip)  # do dns here.
-            except Exception:  # no DNS found.
-                record = None
-            # here.
-            if record:
-                reply = "HexIP: {0} = {1}({2})".format(optinput, record[0].encode('utf-8'), ip)
-            else:
-                reply = "HexIP: {0} = {1}".format(optinput, ip)
-        else:
-            reply = "ERROR: {0} is an invalid HexIP".format(optinput)
-        # output.
-        irc.reply(reply)
+    #def hex2ip(self, irc, msg, args, optinput):
+    #    """<hexip>
+    #    Try and turn hexIP back into IP address.
+    #    Ex: 0200A8C0
+    #    """
+    #
+    #    ip = self._numToDottedQuad(optinput)
+    #    #ip = '.'.join(str(int(i, 16)) for i in reversed([optinput[i:i+2] for i in range(0, len(optinput), 2)]))
+    #
+    #    if ip and len(optinput) == 8:
+    #        try:
+    #            record = socket.gethostbyaddr(ip)  # do dns here.
+    #        except Exception:  # no DNS found.
+    #            record = None
+    #        # here.
+    #        if record:
+    #            reply = "HexIP: {0} = {1}({2})".format(optinput, record[0].encode('utf-8'), ip)
+    #        else:
+    #            reply = "HexIP: {0} = {1}".format(optinput, ip)
+    #    else:
+    #        reply = "ERROR: {0} is an invalid HexIP".format(optinput)
+    #    # output.
+    #    irc.reply(reply)
 
     hex2ip = wrap(hex2ip, (['somethingWithoutSpaces']))
 
@@ -271,7 +271,10 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         # parse json
-        releases = json.loads(html)
+        if sys.version_info[0] == 3:
+            releases = json.loads(str(html))
+        else:
+            releases = json.loads(html)
         # parse json.
         lateststable = releases['latest_stable']['version']
         releases = releases['releases']
@@ -441,8 +444,6 @@ class Assorted(callbacks.Plugin):
         soup = BeautifulSoup(html)
         quotes = soup.findAll('p', attrs={'class':'qt'})
         quote = choice(quotes)
-        #if sys.version_info[0] == 3:
-        #quote = str(quote) #.decode('utf-8')
         num = quote.findPrevious('b').getText()
         quote = quote.getText().encode('utf-8').replace("\n", " ").replace("\r", " ")
         quote = utils.str.normalizeWhitespace(quote)
