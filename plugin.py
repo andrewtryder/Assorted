@@ -442,9 +442,9 @@ class Assorted(callbacks.Plugin):
         quotes = soup.findAll('p', attrs={'class':'qt'})
         quote = choice(quotes)
         #if sys.version_info[0] == 3:
-        #    quote = quote.decode('utf-8')
+        #quote = str(quote) #.decode('utf-8')
         num = quote.findPrevious('b').getText()
-        quote = quote.getText().replace("\n", " ").replace("\r", " ")
+        quote = quote.getText().encode('utf-8').replace("\n", " ").replace("\r", " ")
         quote = utils.str.normalizeWhitespace(quote)
         irc.reply("[{0}] {1}".format(num, quote))
 
