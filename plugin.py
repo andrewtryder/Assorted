@@ -761,7 +761,7 @@ class Assorted(callbacks.Plugin):
             return
 
         # parse RSS.
-        rss = html.decode('utf-8')
+        rss = html #.decode('utf-8')
         rss = feedparser.parse(rss)
         items = rss['entries']
         # process each item and output.
