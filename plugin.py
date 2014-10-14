@@ -835,7 +835,11 @@ class Assorted(callbacks.Plugin):
             return
 
         lines = html.splitlines()
-        randomline = choice(lines)
+        if sys.version_info[0] == 3:
+            randomline = choice(lines).decode()
+        else:
+            randomline = choice(lines)
+        
         irc.reply("Random BOFH excuse :: {0}".format(randomline))
 
     bofh = wrap(bofh)
