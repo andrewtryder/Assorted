@@ -272,7 +272,7 @@ class Assorted(callbacks.Plugin):
             return
         # parse json
         if sys.version_info[0] == 3:
-            releases = json.loads(str(html))
+            releases = json.loads(html.decode('utf-8'))
         else:
             releases = json.loads(html)
         # parse json.
