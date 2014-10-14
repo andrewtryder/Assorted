@@ -595,44 +595,6 @@ class Assorted(callbacks.Plugin):
 
     randomfacts = wrap(randomfacts)
 
-    def hipster(self, irc, msg, args):
-        """
-        Display a hipstermeme from http://www.automeme.net
-        """
-
-        url = 'http://api.automeme.net/text.json?lines=1&vocab=hipster'
-        html = self._httpget(url)
-        if not html:  # http fetch breaks.
-            irc.reply("ERROR: Trying to open: {0}".format(url))
-            return
-        jsondata = json.loads(html)
-        irc.reply(jsondata[0])
-
-    hipster = wrap(hipster)
-
-    def automeme(self, irc, msg, args, number):
-        """
-        Display a meme from http://www.automeme.net
-        Specify a number after the command [1-7] for more than one.
-        """
-
-        if number and (0 < number <= 7):
-            number = number
-        else:
-            number = 1
-
-        url = 'http://api.automeme.net/text.json?lines=%s' % number
-        html = self._httpget(url)
-        if not html:  # http fetch breaks.
-            irc.reply("ERROR: Trying to open: {0}".format(url))
-            return
-        jsondata = json.loads(html)
-
-        for meme in jsondata:
-            irc.reply(meme)
-
-    automeme = wrap(automeme, [optional("int")])
-
     def chucknorris(self, irc, msg, args, opts):
         """
         Grab a random ChuckNorris from icndb.com.
@@ -847,40 +809,6 @@ class Assorted(callbacks.Plugin):
             irc.reply("<nerdman> {0}".format(html))
 
     nerdman = wrap(nerdman, [getopts({'rainbow': ''})])
-
-    def fuckingdinner(self, irc, msg, args, opts):
-        """[--veg]
-
-        What the fuck should I make for dinner? Pulls a receipe from http://whatthefuckshouldimakefordinner.com
-        If --veg is given, a vegetarian meal will be selected.
-        """
-
-        url = 'http://www.whatthefuckshouldimakefordinner.com/'
-
-        # input dict
-        opts = dict(opts)
-        if 'veg' in opts:  # option for vegetarian
-            url += 'veg.php'
-        # build and fetch url.
-        html = self._httpget(url)
-        if not html:  # http fetch breaks.
-            irc.reply("ERROR: Trying to open: {0}".format(url))
-            return
-
-        soup = BeautifulSoup(html)
-        results = soup.findAll('dt')
-
-        if not results:
-            irc.error('I could not the proper formatting on the page. Could %s be broken?' % url)
-        else:
-            out = results[0].dl.string + ' ' + self._bold(results[1].a.string) + ': '
-            out = re.sub(r'fucking', self._ul('FUCKING'), out, re.I)
-            out = re.sub(r'<[^>]*?>', '', out)
-            out = re.sub(r'\n', '', out)
-            out += self._blue(self._shortenUrl(results[1].a['href']))
-            irc.reply(out.encode('utf-8'))
-
-    fuckingdinner = wrap(fuckingdinner, [getopts({'veg': ''})])
 
     def woot(self, irc, msg, args, optlist):
         """[--wine]
