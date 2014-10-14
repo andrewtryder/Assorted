@@ -403,7 +403,11 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        jsondata = json.loads(html)
+        
+        if sys.version_info[0] == 3:
+            jsondata = json.loads(html.decode('utf-8'))
+        else:
+            jsondata = json.loads(html)
         city = jsondata.get('city')
         region_code = jsondata.get('region_code')
         #region_name = jsondata.get('region_name', None)
