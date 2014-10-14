@@ -799,30 +799,30 @@ class Assorted(callbacks.Plugin):
 
     bofh = wrap(bofh)
 
-    def macvendor(self, irc, msg, args, optinput):
-        """<MA:C:ADDRESS>
-
-        The MAC Address Vendor/Manufacturer Lookup API allows you to query and obtain information about any MAC or OUI.
-        Ex: 0023AE000022
-        """
-
-        url = 'http://www.macvendorlookup.com/api/AKzKyAB/' + optinput # 0023AE7B5899
-        html = self._httpget(url)
-        if not html:  # http fetch breaks.
-            irc.reply("ERROR: Trying to open: {0}".format(url))
-            return
-        # process json
-        if 'none' in html:
-            irc.reply("ERROR: {0} is an invalid MAC Address.".format(optinput))
-            return
-        elif 'Error:' in html:
-            irc.reply("ERROR: {0}".format(html))
-        else:
-            jsd = json.loads(html)[0]
-            out = "{0}-{1} :: {2} {3}".format(jsd['startHex'], jsd['endHex'], jsd['company'], jsd['country'])
-            irc.reply(out)
-
-    macvendor = wrap(macvendor, [('somethingWithoutSpaces')])
+    #def macvendor(self, irc, msg, args, optinput):
+    #    """<MA:C:ADDRESS>
+    #
+    #    The MAC Address Vendor/Manufacturer Lookup API allows you to query and obtain information about any MAC or OUI.
+    #    Ex: 0023AE000022
+    #    """
+    #
+    #    url = 'http://www.macvendorlookup.com/api/AKzKyAB/' + optinput # 0023AE7B5899
+    #    html = self._httpget(url)
+    #    if not html:  # http fetch breaks.
+    #        irc.reply("ERROR: Trying to open: {0}".format(url))
+    #        return
+    #    # process json
+    #    if 'none' in html:
+    #        irc.reply("ERROR: {0} is an invalid MAC Address.".format(optinput))
+    #        return
+    #    elif 'Error:' in html:
+    #        irc.reply("ERROR: {0}".format(html))
+    #    else:
+    #        jsd = json.loads(html)[0]
+    #        out = "{0}-{1} :: {2} {3}".format(jsd['startHex'], jsd['endHex'], jsd['company'], jsd['country'])
+    #        irc.reply(out)
+    #
+    #macvendor = wrap(macvendor, [('somethingWithoutSpaces')])
 
     def nerdman(self, irc, args, msg, opts):
         """
