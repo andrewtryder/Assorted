@@ -374,7 +374,10 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
 
-        result = html
+        if sys.version_info[0] == 3:
+            result = html.decode('utf-8')
+        else:
+            result = html
         r_result = re.compile(r'(?i)<A NAME=results>(.*?)</A>')
         r_tag = re.compile(r'<\S+.*?>')
         match = r_result.search(result)
