@@ -178,7 +178,10 @@ class Assorted(callbacks.Plugin):
         jsondata = json.loads(html)
         fact = jsondata.get('facts')
         if fact:
-            irc.reply(fact[0].encode('utf-8'))
+            if sys.version_info[0] == 3:
+                irc.reply(fact[0])
+            else:
+                irc.reply(fact[0].encode('utf-8'))
     
     catfacts = wrap(catfacts)
 
