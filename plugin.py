@@ -438,11 +438,15 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        soup = BeautifulSoup(html) #, convertEntities=BeautifulSoup.HTML_ENTITIES)
+        soup = BeautifulSoup(html)
         quotes = soup.findAll('p', attrs={'class':'qt'})
         quote = choice(quotes)
-        num = quote.findPrevious('b')
-        irc.reply("[{0}] {1}".format(self._red(num.getText()), quote.getText()))
+        if sys.version_info[0] == 3:
+            quote = quote.decode('utf-8')
+        num = quote.findPrevious('b').getText()
+        quote = quote.getText().replace("\n", " ").replace("\r", " ")
+        quote = utils.str.normalizeWhitespace(quote)
+        irc.reply("[{0}] {1}".format(num, quote))
 
     bash = wrap(bash)
 
@@ -803,7 +807,7 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         
-        # decode.
+        # decode for py3.
         if sys.version_info[0] == 3:
             html = html.decode('utf-8')
 
