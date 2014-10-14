@@ -557,7 +557,12 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
 
-        response = json.loads(html)
+        if sys.version_info[0] == 3:
+            response = json.loads(html.decode('utf-8'))
+        else:
+            response = json.loads(html)
+        
+        # check for error.
         if response['message']['code'] != "0":
             irc.reply("ERROR :: {0}".format(response['message']['text']))
             return
