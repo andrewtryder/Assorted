@@ -483,8 +483,12 @@ class Assorted(callbacks.Plugin):
         #gender = tree.find('items/item/author').get('gender') # can be none
         #country = tree.find('items/item/author').get('country')
         #region = tree.find('items/item/author').get('region')
-        category = tree.find('items/item/category').text.encode('utf-8')
-        message = tree.find('items/item/text').text.encode('utf-8')
+        if sys.version_info[0] == 3:
+            category = tree.find('items/item/category').text.encode('utf-8')
+            message = tree.find('items/item/text').text.encode('utf-8')
+        else:
+            category = tree.find('items/item/category').text.encode('utf-8')
+            message = tree.find('items/item/text').text.encode('utf-8')
         #link = tree.find('items/item/short_url').text
 
         irc.reply("FML: [{0}] {1}".format(category, message))
