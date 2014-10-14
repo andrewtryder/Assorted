@@ -493,14 +493,28 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
-        soup = BeautifulSoup(html.replace('&nbsp;',''))
+        # process html.
+        html = html.decode('iso-8859-1')
+        soup = BeautifulSoup(html) #.replace('&nbsp;',''))
+        self.log.info("orig: {0}".format(soup.original_encoding))
         nextpbdate = soup.findAll('div', attrs={'class':'BluebarSmText'})[2]
         prevpbdate = soup.findAll('div', attrs={'class':'BluebarSmText'})[3]
         curjackpot = soup.findAll('td', attrs={'class':'JackpotText'})[1]
         prevpb = soup.findAll('td', attrs={'class':'ResultsText'})[1]
-
+        # str
+        if sys.version_info[0] == 3:
+            curjackpot = curjackpot.getText().encode('utf-8')
+            nextpbdate = nextpbdate.getText().encode('utf-8')
+            prevpb = prevpb.getText().encode('utf-8')
+            prevpbdate = prevpbdate.getText().encode('utf-8')
+        else:
+            curjackpot = curjackpot.getText().encode('utf-8')
+            nextpbdate = nextpbdate.getText().encode('utf-8')
+            prevpb = prevpb.getText().encode('utf-8')
+            prevpbdate = prevpbdate.getText().encode('utf-8')
+            
         output = "Current jackpot: {0} for {1} :: Previous numbers: {2} from: {3}".format(\
-            self._bold(curjackpot.text), nextpbdate.text, ircutils.bold(prevpb.text), prevpbdate.text)
+            self._bold(curjackpot), nextpbdate, self._bold(prevpb), prevpbdate)
         irc.reply(output)
 
     powerball = wrap(powerball)
