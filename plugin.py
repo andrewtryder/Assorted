@@ -408,6 +408,7 @@ class Assorted(callbacks.Plugin):
             jsondata = json.loads(html.decode('utf-8'))
         else:
             jsondata = json.loads(html)
+
         city = jsondata.get('city')
         region_code = jsondata.get('region_code')
         #region_name = jsondata.get('region_name', None)
