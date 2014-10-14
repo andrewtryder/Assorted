@@ -503,10 +503,10 @@ class Assorted(callbacks.Plugin):
         prevpb = soup.findAll('td', attrs={'class':'ResultsText'})[1]
         # str
         if sys.version_info[0] == 3:
-            curjackpot = curjackpot.getText().encode('utf-8')
-            nextpbdate = nextpbdate.getText().encode('utf-8')
-            prevpb = prevpb.getText().encode('utf-8')
-            prevpbdate = prevpbdate.getText().encode('utf-8')
+            curjackpot = curjackpot.getText()
+            nextpbdate = nextpbdate.getText()
+            prevpb = prevpb.getText()
+            prevpbdate = prevpbdate.getText()
         else:
             curjackpot = curjackpot.getText().encode('utf-8')
             nextpbdate = nextpbdate.getText().encode('utf-8')
