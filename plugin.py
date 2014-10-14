@@ -669,7 +669,10 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
 
-        ticker = json.loads(html)
+        if sys.version_info[0] == 3:
+            ticker = json.loads(str(html))
+        else:
+            ticker = json.loads(html)
 
         if 'ticker' not in ticker:
             irc.reply("Error parsing btc-e.com API at {0}".format(url))
