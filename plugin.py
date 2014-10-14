@@ -225,9 +225,9 @@ class Assorted(callbacks.Plugin):
         for row in rows:
             tds = [item.getText().strip() for item in row.findAll('td')]
             if sys.version_info[0] == 3:
-                slur = tds[0].encode('utf-8')
-                group = tds[1].encode('utf-8')
-                reasoning = tds[2].encode('utf-8')
+                slur = tds[0]
+                group = tds[1]
+                reasoning = tds[2]
             else:
                 slur = tds[0].encode('utf-8')
                 group = tds[1].encode('utf-8')
