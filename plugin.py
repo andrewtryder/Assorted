@@ -216,7 +216,7 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         # process html
-        soup = BeautifulSoup(html) #, convertEntities=BeautifulSoup.HTML_ENTITIES, fromEncoding='utf-8')
+        soup = BeautifulSoup(html)
         div = soup.find('div', attrs={'id':'slurs'})
         rows = div.findAll('tr', attrs={'id':re.compile('slur_.*')})
 
@@ -224,9 +224,14 @@ class Assorted(callbacks.Plugin):
 
         for row in rows:
             tds = [item.getText().strip() for item in row.findAll('td')]
-            slur = tds[0].encode('utf-8')
-            group = tds[1].encode('utf-8')
-            reasoning = tds[2].encode('utf-8')
+            if sys.version_info[0] == 3:
+                slur = tds[0].encode('utf-8')
+                group = tds[1].encode('utf-8')
+                reasoning = tds[2].encode('utf-8')
+            else:
+                slur = tds[0].encode('utf-8')
+                group = tds[1].encode('utf-8')
+                reasoning = tds[2].encode('utf-8')
             slurs.append("{0}({1}) :: {2}".format(slur, group, reasoning))
 
         randomslur = choice(slurs)
@@ -594,6 +599,9 @@ class Assorted(callbacks.Plugin):
         if not html:  # http fetch breaks.
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
+        
+        if sys.version_info[0] == 3:
+            html = html.decode('utf-8')
 
         fact = re.search(r'<strong><i>(.*?)</i></strong>', html, re.I|re.S)
         irc.reply(fact.group(1))
