@@ -670,7 +670,7 @@ class Assorted(callbacks.Plugin):
             return
 
         if sys.version_info[0] == 3:
-            ticker = json.loads(html.decode('utf-8')))
+            ticker = json.loads(html.decode('utf-8'))
         else:
             ticker = json.loads(html)
 
