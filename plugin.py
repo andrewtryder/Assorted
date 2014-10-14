@@ -173,6 +173,8 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         # process html
+        if sys.version_info[0] == 3:
+            html = html.decode('utf-8')
         jsondata = json.loads(html)
         fact = jsondata.get('facts')
         if fact:
@@ -196,7 +198,10 @@ class Assorted(callbacks.Plugin):
         zz = []
         for p in px:
             l = 'http://imgur.com' + p.find('a')['href']
-            t = p.find('p').getText().encode('utf-8')
+            if sys.version_info[0] == 3:
+                t = p.find('p').getText()
+            else:
+                t = p.find('p').getText().encode('utf-8')
             zz.append({'l':l, 't':t})
         # output
         o = random.choice(zz)
