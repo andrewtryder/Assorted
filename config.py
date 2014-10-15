@@ -18,6 +18,6 @@ def configure(advanced):
 
 
 Assorted = conf.registerPlugin('Assorted')
-conf.registerGlobalValue(Assorted, 'logURLs',registry.Boolean(True, """Should we log all URL calls?"""))
+conf.registerGlobalValue(Assorted, 'logURLs',registry.Boolean(False, """Should we log all URL calls?"""))
 
 # vim:set shiftwidth=4 tabstop=4 expandtab textwidth=250:
