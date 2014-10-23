@@ -5,13 +5,17 @@
 #
 #
 ###
+# py3 compat
+from __future__ import print_function, unicode_literals
+from __future__ import absolute_import, division
+
 # my libs
 from lxml import etree
 from bs4 import BeautifulSoup
 import sys
-if sys.version_info[0] == 3:
+if sys.version_info[0] > 2:
     import urllib.request, urllib.error, urllib.parse
-else:
+else:  # python2.
     import urllib2
 from random import choice
 import json
@@ -44,7 +48,6 @@ class Assorted(callbacks.Plugin):
 
     def _rainbow(self, text):
         text = ''.join([ircutils.mircColor(x, choice(list(ircutils.mircColors.keys()))) for x in text])
-        #  text = ''.join([ircutils.mircColor(x, choice(ircutils.mircColors.keys())) for x in text])
         return text
 
     def _red(self, string):
@@ -92,7 +95,7 @@ class Assorted(callbacks.Plugin):
               return "%3.1f%s" % (num, x)
             num /= 1000.0
 
-    def _myfloat(self,float_string):
+    def _myfloat(self, float_string):
         """It takes a float string ("1,23" or "1,234.567.890") and
         converts it to floating point number (1.23 or 1.234567890).
         """
@@ -118,19 +121,6 @@ class Assorted(callbacks.Plugin):
             txt = txt.replace(sep, default_sep)
         return [i.strip() for i in txt.split(default_sep)]
 
-    #def _numToDottedQuad(self, n):
-    #    try:
-    #        n = int(n,16)
-    #        d = 256 * 256 * 256
-    #        q = []
-    #        while d > 0:
-    #            m,n = divmod(n,d)
-    #            q.append(str(m))
-    #            d = d/256
-    #        return '.'.join(q)
-    #    except:
-    #        return False
-
     def _httpget(self, url, h=None, d=None, l=True):
         """General HTTP resource fetcher. Pass headers via h, data via d, and to log via l."""
 
@@ -147,17 +137,6 @@ class Assorted(callbacks.Plugin):
             self.log.error("ERROR opening {0} message: {1}".format(url, e))
             return None
 
-    #def _shortenUrl(self, url):
-    #    """Shortens a long URL into a short one."""
-    #
-    #    try:
-    #        posturi = "https://www.googleapis.com/urlshortener/v1/url"
-    #        data = json.dumps({'longUrl' : url})
-    #        request = self._httpget(posturi, h={'Content-Type':'application/json'}, d=data, l=False)
-    #        return json.loads(request)['id']
-    #    except:
-    #        return url
-
     ####################
     # PUBLIC FUNCTIONS #
     ####################
@@ -173,15 +152,11 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         # process html
-        if sys.version_info[0] == 3:
-            html = html.decode('utf-8')
+        html = html.decode('utf-8')
         jsondata = json.loads(html)
         fact = jsondata.get('facts')
         if fact:
-            if sys.version_info[0] == 3:
-                irc.reply(fact[0])
-            else:
-                irc.reply(fact[0].encode('utf-8'))
+            irc.reply(fact[0])
     
     catfacts = wrap(catfacts)
 
