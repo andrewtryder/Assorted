@@ -2,20 +2,18 @@ language: python
 python:
   - "2.7"
   - "3.4"
+  - "pypy"
+  - "pypy3"
 # command to install dependencies, 
 install:
   - pip install -vr requirements.txt
-  #- pip install coveralls
 # command to run tests, e.g. python setup.py test
 script:
   - echo $TRAVIS_PYTHON_VERSION
   - cd .. && supybot-test Assorted
-#  - py.test coveralls/tests.py --doctest-modules --pep8 coveralls -v --cov coveralls --cov-report term-missing
-#after_success:
-#  - coveralls
 notifications:
   email: false
-  # irc: irc.efnet.net#supybot
+  irc: irc.efnet.net#supybot
   webhooks: http://n.tkte.ch/h/3502/JH6vGoWLR6ouZEo9wPqbEedi
 matrix:
   fast_finish: true
