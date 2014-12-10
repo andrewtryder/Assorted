@@ -141,6 +141,28 @@ class Assorted(callbacks.Plugin):
     # PUBLIC FUNCTIONS #
     ####################
 
+    def gasprices(self, irc, msg, args, optzip):
+        """<zipcode>
+
+        Display lowest reported gas price in zipcode.
+        """
+
+        url = 'http://gasprices.mapquest.com/station/us/nh/nashua/%s' % optzip
+        html = self._httpget(url)
+        if not html:  # http fetch breaks.
+            irc.reply("ERROR: Trying to open: {0}".format(url))
+            return
+        # process html
+        html = html.decode('utf-8')
+        soup = BeautifulSoup(html)
+        div = soup.find('div', attrs={'id': 'results-wrapper'})
+        price = div.find('div', attrs={'class': 'price'})
+        price = price.getText().encode('utf-8').replace('\n', '')
+        # output
+        irc.reply("{0} :: Lowest reported gas price for unleaded(87) is: {1}".format(optzip, price))
+
+    gasprices = wrap(gasprices, (['somethingWithoutSpaces']))
+
     def catfacts(self, irc, msg, args):
         """
         Display random factfact.
