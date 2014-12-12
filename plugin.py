@@ -153,13 +153,17 @@ class Assorted(callbacks.Plugin):
             irc.reply("ERROR: Trying to open: {0}".format(url))
             return
         # process html
-        html = html.decode('utf-8')
-        soup = BeautifulSoup(html)
-        div = soup.find('div', attrs={'id': 'results-wrapper'})
-        price = div.find('div', attrs={'class': 'price'})
-        price = price.getText().encode('utf-8').replace('\n', '')
-        # output
-        irc.reply("{0} :: Lowest reported gas price for unleaded(87) is: {1}".format(optzip, price))
+        try:
+            html = html.decode('utf-8')
+            soup = BeautifulSoup(html)
+            div = soup.find('div', attrs={'id': 'results-wrapper'})
+            price = div.find('div', attrs={'class': 'price'})
+            price = price.getText().encode('utf-8').replace('\n', '')
+            # output
+            irc.reply("{0} :: Lowest reported gas price for unleaded(87) is: {1}".format(optzip, price))
+        except Exception as e:
+            self.log.info("gasprices :: ERROR looking up {0} :: {1}".format(optzip, e))
+            irc.reply("ERROR: Trying to fetch gas prices for: {0}".format(optzip))
 
     gasprices = wrap(gasprices, (['somethingWithoutSpaces']))
 
